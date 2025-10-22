@@ -51,15 +51,18 @@ class CotizacionController extends Controller
             'id_solicitud' => 'required|exists:solicitud,id_solicitud',
             'id_proveedor' => 'required|exists:proveedor,id_proveedor',
             'fecha_cotizacion' => 'required|date',
-            'fecha_validez' => 'required|date|after:fecha_cotizacion',
-            'tiempo_entrega_dias' => 'required|integer|min:1',
+            'fecha_validez' => 'nullable|date|after:fecha_cotizacion',
+            'tiempo_entrega' => 'required|integer|min:1',
             'condiciones_pago' => 'required|string|max:4000',
-            'documento' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'archivo_cotizacion' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'productos' => 'required|array|min:1',
-            'productos.*.id_producto' => 'required|exists:catalogo_producto,id_producto',
-            'productos.*.cantidad' => 'required|numeric|min:0.01',
-            'productos.*.precio_unitario' => 'required|numeric|min:0',
-            'productos.*.observaciones' => 'nullable|string|max:4000'
+            'productos.*' => 'required|exists:catalogo_producto,id_producto',
+            'cantidades' => 'required|array',
+            'cantidades.*' => 'required|numeric|min:0.01',
+            'precios' => 'required|array',
+            'precios.*' => 'required|numeric|min:0',
+            'observaciones' => 'nullable|array',
+            'observaciones.*' => 'nullable|string|max:4000'
         ]);
 
         DB::beginTransaction();
@@ -71,44 +74,58 @@ class CotizacionController extends Controller
                 'id_solicitud' => $request->id_solicitud,
                 'id_proveedor' => $request->id_proveedor,
                 'fecha_cotizacion' => $request->fecha_cotizacion,
-                'fecha_validez' => $request->fecha_validez,
-                'tiempo_entrega_dias' => $request->tiempo_entrega_dias,
+                'fecha_validez' => $request->fecha_validez ?? null,
+                'tiempo_entrega_dias' => $request->tiempo_entrega,
                 'condiciones_pago' => $request->condiciones_pago,
                 'estado' => 'Activa',
                 'id_usuario_compras' => Auth::id()
             ]);
 
-            // Generar número de cotización
-            $contador = Cotizacion::whereYear('fecha_cotizacion', now()->year)->count() + 1;
-            $cotizacion->numero_cotizacion = 'COT-' . now()->year . '-' . str_pad($contador, 5, '0', STR_PAD_LEFT);
-            
-            // Subir documento si existe
-            if ($request->hasFile('documento')) {
-                $path = $request->file('documento')->store('cotizaciones', 'public');
+            // Generar número de cotización sólo si no fue provisto
+            if ($request->filled('numero_cotizacion')) {
+                $cotizacion->numero_cotizacion = $request->numero_cotizacion;
+            } else {
+                $contador = Cotizacion::whereYear('fecha_cotizacion', now()->year)->count() + 1;
+                $cotizacion->numero_cotizacion = 'COT-' . now()->year . '-' . str_pad($contador, 5, '0', STR_PAD_LEFT);
+            }
+
+            // Subir documento si existe (archivo_cotizacion en la vista)
+            if ($request->hasFile('archivo_cotizacion')) {
+                $path = $request->file('archivo_cotizacion')->store('cotizaciones', 'public');
                 $cotizacion->documento_cotizacion = $path;
             }
 
             $cotizacion->save();
 
-            // Crear detalles
+            // Crear detalles a partir de arrays planos productos[], cantidades[], precios[], observaciones[]
+            $productos = $request->input('productos', []);
+            $cantidades = $request->input('cantidades', []);
+            $precios = $request->input('precios', []);
+            $observaciones = $request->input('observaciones', []);
+
             $montoTotal = 0;
-            foreach ($request->productos as $producto) {
+            for ($i = 0; $i < count($productos); $i++) {
+                $idProducto = $productos[$i];
+                $cantidad = $cantidades[$i] ?? 0;
+                $precioUnitario = $precios[$i] ?? 0;
+                $obs = $observaciones[$i] ?? null;
+
                 $detalle = new DetalleCotizacion([
                     'id_cotizacion' => $cotizacion->id_cotizacion,
-                    'id_producto' => $producto['id_producto'],
-                    'cantidad' => $producto['cantidad'],
-                    'precio_unitario' => $producto['precio_unitario'],
-                    'observaciones' => $producto['observaciones'] ?? null
+                    'id_producto' => $idProducto,
+                    'cantidad' => $cantidad,
+                    'precio_unitario' => $precioUnitario,
+                    'observaciones' => $obs
                 ]);
                 $detalle->save();
-                $montoTotal += $detalle->precio_total;
+                $montoTotal += (float) $detalle->precio_total;
             }
 
             // Actualizar monto total
             $cotizacion->monto_total = $montoTotal;
             $cotizacion->save();
 
-            // Actualizar estado de la solicitud si es la primera cotización
+            // Actualizar estado de la solicitud si corresponde
             if ($solicitud->estado === 'Presupuestada') {
                 $solicitud->cambiarEstado('En_Cotizacion', Auth::id());
             }
@@ -141,25 +158,34 @@ class CotizacionController extends Controller
         return view('cotizaciones.comparar', compact('solicitud', 'cotizaciones'));
     }
 
-    public function seleccionar(Request $request, Cotizacion $cotizacion)
+    public function seleccionar(Request $request)
     {
-        if ($cotizacion->estado !== 'Activa') {
-            return back()->with('error', 'La cotización no está en estado para ser seleccionada.');
-        }
+        // Nueva versión: recibir id_cotizacion desde el request
+        $request->validate([
+            'id_cotizacion' => 'required|exists:cotizacion,id_cotizacion',
+            'justificacion' => 'nullable|string|max:4000'
+        ]);
 
         DB::beginTransaction();
         try {
+            $id = $request->input('id_cotizacion');
+            $cotizacion = Cotizacion::findOrFail($id);
+
+            if ($cotizacion->estado !== 'Activa') {
+                return back()->with('error', 'La cotización no está en estado para ser seleccionada.');
+            }
+
             // Marcar la cotización como seleccionada
             $cotizacion->update(['estado' => 'Seleccionada']);
-            
+
             // Marcar las demás cotizaciones como descartadas
             Cotizacion::where('id_solicitud', $cotizacion->id_solicitud)
                 ->where('id_cotizacion', '!=', $cotizacion->id_cotizacion)
                 ->update(['estado' => 'Descartada']);
 
-            // Actualizar estado de la solicitud
+            // Actualizar estado de la solicitud: pasar a etapa de aprobación
             $solicitud = $cotizacion->solicitud;
-            $solicitud->cambiarEstado('Cotizada', Auth::id(), 'Cotización seleccionada');
+            $solicitud->cambiarEstado('En_Aprobacion', Auth::id(), $request->input('justificacion'));
 
             DB::commit();
             return redirect()->route('cotizaciones.index')

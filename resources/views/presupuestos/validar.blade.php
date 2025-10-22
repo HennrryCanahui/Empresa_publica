@@ -121,7 +121,7 @@
                 <h5 class="card-title mb-0">Validación de Presupuesto</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('presupuestos.procesar-validacion', $solicitud) }}" method="POST">
+                <form action="{{ route('presupuestos.procesar', $solicitud) }}" method="POST">
                     @csrf
 
                     <div class="mb-3">
@@ -129,7 +129,7 @@
                         <select class="form-select @error('validacion') is-invalid @enderror" 
                                 id="validacion" name="validacion" required>
                             <option value="">Seleccione...</option>
-                            @foreach(['APROBADA' => 'Aprobar', 'RECHAZADA' => 'Rechazar'] as $key => $value)
+                            @foreach(['Válido' => 'Válido', 'Requiere_Ajuste' => 'Requiere Ajuste', 'Rechazado' => 'Rechazado'] as $key => $value)
                             <option value="{{ $key }}" {{ old('validacion') == $key ? 'selected' : '' }}>
                                 {{ $value }}
                             </option>

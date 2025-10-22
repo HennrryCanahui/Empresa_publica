@@ -19,9 +19,9 @@ class DetalleSolicitud extends Model
     ];
 
     protected $casts = [
-        'cantidad' => 'decimal:2',
-        'precio_estimado_unitario' => 'decimal:2',
-        'precio_estimado_total' => 'decimal:2',
+        'cantidad' => 'float',
+        'precio_estimado_unitario' => 'float',
+        'precio_estimado_total' => 'float',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];

@@ -6,7 +6,9 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 use App\Models\Solicitud;
 use App\Models\Usuario;
+use App\Models\DocumentoAdjunto;
 use App\Policies\SolicitudPolicy;
+use App\Policies\DocumentoPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Solicitud::class => SolicitudPolicy::class,
+        DocumentoAdjunto::class => DocumentoPolicy::class,
     ];
 
     /**

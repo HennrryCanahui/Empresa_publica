@@ -27,7 +27,7 @@ class Cotizacion extends Model
     protected $casts = [
         'fecha_cotizacion' => 'date',
         'fecha_validez' => 'date',
-        'monto_total' => 'decimal:2',
+        'monto_total' => 'float',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];

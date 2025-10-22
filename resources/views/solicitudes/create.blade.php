@@ -50,12 +50,12 @@
                             <select class="form-select @error('prioridad') is-invalid @enderror" 
                                     id="prioridad" name="prioridad" required>
                                 <option value="">Seleccione...</option>
-                                @foreach(['BAJA' => 'Baja', 'MEDIA' => 'Media', 'ALTA' => 'Alta', 'URGENTE' => 'Urgente'] as $key => $value)
-                                <option value="{{ $key }}" 
-                                        {{ old('prioridad', $solicitud->prioridad ?? '') == $key ? 'selected' : '' }}>
-                                    {{ $value }}
-                                </option>
-                                @endforeach
+                                    @foreach(['Baja' => 'Baja', 'Media' => 'Media', 'Alta' => 'Alta', 'Urgente' => 'Urgente'] as $key => $value)
+                                    <option value="{{ $key }}" 
+                                            {{ old('prioridad', $solicitud->prioridad ?? '') == $key ? 'selected' : '' }}>
+                                        {{ $value }}
+                                    </option>
+                                    @endforeach
                             </select>
                             @error('prioridad')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -63,14 +63,14 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="fecha_requerida" class="form-label">Fecha Requerida *</label>
-                            <input type="date" class="form-control @error('fecha_requerida') is-invalid @enderror" 
-                                   id="fecha_requerida" name="fecha_requerida" 
-                                   value="{{ old('fecha_requerida', isset($solicitud) ? $solicitud->fecha_requerida->format('Y-m-d') : '') }}"
-                                   min="{{ date('Y-m-d') }}" required>
-                            @error('fecha_requerida')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                <label for="fecha_limite" class="form-label">Fecha Requerida</label>
+                <input type="date" class="form-control @error('fecha_limite') is-invalid @enderror" 
+                    id="fecha_limite" name="fecha_limite" 
+                    value="{{ old('fecha_limite', isset($solicitud) && $solicitud->fecha_limite ? $solicitud->fecha_limite->format('Y-m-d') : '') }}"
+                    min="{{ date('Y-m-d') }}">
+                @error('fecha_limite')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
                         </div>
                     </div>
 
@@ -126,12 +126,12 @@
                                                       placeholder="Especificaciones adicionales">{{ $detalle->especificaciones_adicionales }}</textarea>
                                         </td>
                                         <td>
-                                            <input type="number" name="cantidades[]" 
+                          <input type="number" name="cantidades[]" 
                                                    class="form-control cantidad-input" 
                                                    value="{{ $detalle->cantidad }}" min="1" step="0.01" required>
                                         </td>
                                         <td>
-                                            <input type="number" name="precios[]" 
+                              <input type="number" name="precios[]" 
                                                    class="form-control precio-input" 
                                                    value="{{ $detalle->precio_estimado_unitario }}" 
                                                    min="0" step="0.01" required>

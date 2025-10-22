@@ -18,15 +18,15 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         switch ($user->rol) {
-            case 'solicitante':
+            case 'Solicitante':
                 return $this->dashboardSolicitante($user);
-            case 'presupuesto':
+            case 'Presupuesto':
                 return $this->dashboardPresupuesto($user);
-            case 'compras':
+            case 'Compras':
                 return $this->dashboardCompras($user);
-            case 'aprobador':
+            case 'Autoridad':
                 return $this->dashboardAprobador($user);
-            case 'admin':
+            case 'Administrador':
                 return $this->dashboardAdmin($user);
             default:
                 return redirect()->route('login')->with('error', 'Rol no válido');

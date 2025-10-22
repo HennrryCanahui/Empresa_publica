@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use App\Models\Unidad;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
@@ -55,7 +54,7 @@ class UsuarioController extends Controller
             'telefono' => 'nullable'
         ]);
 
-        $validated['contrasena'] = Hash::make($validated['contrasena']);
+    // El mutator en el modelo Usuario encripta la contraseña automáticamente
         $validated['activo'] = true;
         Usuario::create($validated);
 
@@ -81,9 +80,7 @@ class UsuarioController extends Controller
             'contrasena' => 'nullable|min:6'
         ]);
 
-        if (!empty($validated['contrasena'])) {
-            $validated['contrasena'] = Hash::make($validated['contrasena']);
-        } else {
+        if (empty($validated['contrasena'])) {
             unset($validated['contrasena']);
         }
 

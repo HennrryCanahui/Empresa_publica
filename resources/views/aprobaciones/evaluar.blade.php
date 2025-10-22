@@ -177,7 +177,7 @@
                 <h5 class="card-title mb-0">Formulario de Aprobación</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('aprobaciones.procesar-evaluacion', $solicitud) }}" method="POST">
+                <form action="{{ route('aprobaciones.procesar', $solicitud) }}" method="POST">
                     @csrf
 
                     <div class="mb-3">

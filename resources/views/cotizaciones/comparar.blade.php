@@ -154,7 +154,7 @@
         @if(!$solicitud->cotizaciones->where('estado', 'Seleccionada')->count())
         <div class="row mt-4">
             <div class="col-md-12">
-                <form action="{{ route('cotizaciones.seleccionar', $solicitud) }}" method="POST" class="card">
+                <form action="{{ route('cotizaciones.seleccionar') }}" method="POST" class="card">
                     @csrf
                     <div class="card-header">
                         <h5 class="card-title mb-0">Seleccionar Cotización Ganadora</h5>

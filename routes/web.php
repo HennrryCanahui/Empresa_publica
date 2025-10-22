@@ -152,7 +152,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create/{solicitud}', [CotizacionController::class, 'create'])->name('cotizaciones.create');
         Route::post('/', [CotizacionController::class, 'store'])->name('cotizaciones.store');
         Route::get('/{solicitud}/comparar', [CotizacionController::class, 'comparar'])->name('cotizaciones.comparar');
-        Route::post('/{cotizacion}/seleccionar', [CotizacionController::class, 'seleccionar'])->name('cotizaciones.seleccionar');
+    Route::post('/seleccionar', [CotizacionController::class, 'seleccionar'])->name('cotizaciones.seleccionar');
     });
 
     // Aprobaciones
