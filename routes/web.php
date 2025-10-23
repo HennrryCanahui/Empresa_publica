@@ -11,6 +11,11 @@ use App\Http\Controllers\UnidadController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\CatalogoProductoController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CategoriaProductoController;
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\AuditoriaController;
+use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\NotificacionController;
 
 
 
