@@ -27,6 +27,15 @@ class Solicitud extends Model
     public $incrementing = false;
     public $timestamps = true;
 
+    /**
+     * Obtener la clave de ruta para el modelo.
+     */
+    public function getRouteKeyName()
+    {
+        return 'id_solicitud';
+    }
+
+    // ... resto de las relaciones
     public function unidadSolicitante()
     {
         return $this->belongsTo(Unidad::class, 'id_unida_solicitante');

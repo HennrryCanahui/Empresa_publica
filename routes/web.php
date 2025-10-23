@@ -18,12 +18,10 @@ use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\ProfileController;
 
-
-
 // Rutas de autenticación (Breeze las genera automáticamente)
 require __DIR__.'/auth.php';
 
-// Ruta raíz: si no está autenticado, middleware 'auth' lo llevará al login; si está autenticado, redirige al dashboard.
+// Ruta raíz
 Route::get('/', function () {
     return redirect()->route('dashboard');
 })->middleware('auth');
@@ -44,21 +42,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
     Route::post('/notificaciones/{notificacion}/leer', [NotificacionController::class, 'marcarLeida'])->name('notificaciones.leer');
     
-    // Ver detalle de solicitud (todos pueden ver, pero con restricciones en el controlador)
-    Route::get('/solicitudes/{solicitud}', [SolicitudController::class, 'show'])->name('solicitudes.show');
-    
     // ========================================
     // SOLICITANTE - Gestión de solicitudes propias
     // ========================================
     Route::middleware(['role:Solicitante,Admin'])->group(function () {
-        Route::get('/mis-solicitudes', [SolicitudController::class, 'misSolicitudes'])->name('solicitudes.mias');
+        Route::get('/solicitudes', [SolicitudController::class, 'misSolicitudes'])->name('solicitudes.index');
         Route::get('/solicitudes/crear', [SolicitudController::class, 'create'])->name('solicitudes.create');
         Route::post('/solicitudes', [SolicitudController::class, 'store'])->name('solicitudes.store');
+        Route::get('/solicitudes/{solicitud}', [SolicitudController::class, 'show'])->name('solicitudes.show');
         Route::get('/solicitudes/{solicitud}/editar', [SolicitudController::class, 'edit'])->name('solicitudes.edit');
         Route::put('/solicitudes/{solicitud}', [SolicitudController::class, 'update'])->name('solicitudes.update');
-        
-        // Reapertura de solicitud rechazada
-        Route::post('/solicitudes/{solicitud}/reabrir', [SolicitudController::class, 'reabrir'])->name('solicitudes.reabrir');
+        Route::patch('/solicitudes/{solicitud}/anular', [SolicitudController::class, 'anular'])->name('solicitudes.anular');
+        Route::patch('/solicitudes/{solicitud}/reabrir', [SolicitudController::class, 'reabrir'])->name('solicitudes.reabrir');
+        Route::get('/solicitudes/{solicitud}/historial', [SolicitudController::class, 'historial'])->name('solicitudes.historial');
+        Route::post('/solicitudes/{solicitud}/cambiar-estado', [SolicitudController::class, 'cambiarEstado'])->name('solicitudes.cambiarEstado');
     });
     
     // ========================================
@@ -74,10 +71,8 @@ Route::middleware(['auth'])->group(function () {
     // COMPRAS - Cotizaciones y Adquisiciones
     // ========================================
     Route::middleware(['role:Compras,Admin'])->group(function () {
-        // Solicitudes listas para cotizar
         Route::get('/compras/solicitudes', [CotizacionController::class, 'solicitudesPresupuestadas'])->name('compras.solicitudes');
         
-        // Cotizaciones
         Route::get('/cotizaciones/{solicitud}', [CotizacionController::class, 'index'])->name('cotizaciones.index');
         Route::get('/cotizaciones/{solicitud}/crear', [CotizacionController::class, 'create'])->name('cotizaciones.create');
         Route::post('/cotizaciones', [CotizacionController::class, 'store'])->name('cotizaciones.store');
@@ -86,10 +81,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/cotizaciones/{cotizacion}/seleccionar', [CotizacionController::class, 'seleccionar'])->name('cotizaciones.seleccionar');
         Route::post('/cotizaciones/{cotizacion}/descartar', [CotizacionController::class, 'descartar'])->name('cotizaciones.descartar');
         
-        // Proveedores
         Route::resource('proveedores', ProveedorController::class);
         
-        // Órdenes de compra / Adquisiciones
         Route::get('/ordenes', [AdquisicionController::class, 'index'])->name('ordenes.index');
         Route::get('/ordenes/crear/{solicitud}', [AdquisicionController::class, 'create'])->name('ordenes.create');
         Route::post('/ordenes', [AdquisicionController::class, 'store'])->name('ordenes.store');
@@ -111,34 +104,27 @@ Route::middleware(['auth'])->group(function () {
     // ADMIN - Administración completa
     // ========================================
     Route::middleware(['role:Admin'])->prefix('admin')->name('admin.')->group(function () {
-        // Gestión de usuarios
         Route::resource('usuarios', UsuarioController::class);
         Route::post('usuarios/{usuario}/toggle-activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.toggle-activo');
         
-        // Gestión de unidades
         Route::resource('unidades', UnidadController::class);
         
-        // Gestión de catálogo
         Route::resource('categorias', CategoriaProductoController::class);
         Route::resource('productos', CatalogoProductoController::class);
         
-        // Reportes
         Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
         Route::get('/reportes/solicitudes', [ReporteController::class, 'solicitudes'])->name('reportes.solicitudes');
         Route::get('/reportes/proveedores', [ReporteController::class, 'proveedores'])->name('reportes.proveedores');
         Route::get('/reportes/presupuesto', [ReporteController::class, 'presupuesto'])->name('reportes.presupuesto');
         Route::post('/reportes/exportar', [ReporteController::class, 'exportar'])->name('reportes.exportar');
         
-        // Auditoría
         Route::get('/auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
         Route::get('/auditoria/{auditoria}', [AuditoriaController::class, 'show'])->name('auditoria.show');
         
-        // Configuración del sistema
         Route::get('/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
     });
 });
 
-// Ruta para manejar errores 404
 Route::fallback(function () {
     abort(404);
 });

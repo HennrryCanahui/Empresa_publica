@@ -1,55 +1,130 @@
 @extends('layouts.app')
 
-@section('header')
-    <h2 class="h4">Mis Solicitudes</h2>
-@endsection
-
 @section('content')
-    @if(session('status'))
-        <div class="alert alert-success">{{ session('status') }}</div>
-    @endif
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-file-earmark-plus me-2"></i>Nueva Solicitud</h4>
+            </div>
+            <div class="card-body">
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
 
-    <div class="mb-3 d-flex justify-content-between">
-        <a href="{{ route('solicitudes.create') }}" class="btn btn-primary">Crear Solicitud</a>
-    </div>
+                <form action="{{ route('solicitudes.store') }}" method="POST">
+                    @csrf
 
-    @if($solicitudes->isEmpty())
-        <div class="alert alert-info">No tienes solicitudes aún.</div>
-    @else
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Título</th>
-                        <th>Estado</th>
-                        <th>Creada</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($solicitudes as $s)
-                        <tr>
-                            <td>{{ $s->id ?? $loop->iteration }}</td>
-                            <td>{{ $s->titulo }}</td>
-                            <td>{{ $s->estado }}</td>
-                            <td>{{ $s->created_at->format('Y-m-d') }}</td>
-                            <td>
-                                <a href="{{ route('solicitudes.show', $s) }}" class="btn btn-sm btn-outline-primary">Ver</a>
-                                @if($s->estado === 'Pendiente')
-                                    <a href="{{ route('solicitudes.edit', $s) }}" class="btn btn-sm btn-outline-secondary">Editar</a>
-                                @endif
-                                @if($s->estado === 'Rechazada')
-                                    <form method="POST" action="{{ route('solicitudes.reabrir', $s) }}" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-warning">Reabrir</button>
-                                    </form>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    <div class="mb-3">
+                        <label for="id_unida_solicitante" class="form-label">Unidad Solicitante <span class="text-danger">*</span></label>
+                        <select name="id_unida_solicitante" 
+                                id="id_unida_solicitante" 
+                                class="form-select @error('id_unida_solicitante') is-invalid @enderror" 
+                                required>
+                            <option value="">Seleccione una unidad</option>
+                            {{-- Aquí deberías cargar las unidades desde el controlador --}}
+                            {{-- Ejemplo: @foreach($unidades as $unidad)
+                                <option value="{{ $unidad->id_unidad }}" {{ old('id_unida_solicitante') == $unidad->id_unidad ? 'selected' : '' }}>
+                                    {{ $unidad->nombre }}
+                                </option>
+                            @endforeach --}}
+                        </select>
+                        @error('id_unida_solicitante')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción <span class="text-danger">*</span></label>
+                        <textarea name="descripcion" 
+                                  id="descripcion" 
+                                  rows="4" 
+                                  class="form-control @error('descripcion') is-invalid @enderror" 
+                                  placeholder="Describe detalladamente lo que necesitas..."
+                                  required>{{ old('descripcion') }}</textarea>
+                        @error('descripcion')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">Describe claramente qué necesitas adquirir o el servicio que requieres.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="justificacion" class="form-label">Justificación <span class="text-danger">*</span></label>
+                        <textarea name="justificacion" 
+                                  id="justificacion" 
+                                  rows="4" 
+                                  class="form-control @error('justificacion') is-invalid @enderror" 
+                                  placeholder="Explica por qué es necesaria esta solicitud..."
+                                  required>{{ old('justificacion') }}</textarea>
+                        @error('justificacion')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">Explica por qué es necesaria esta adquisición.</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="prioridad" class="form-label">Prioridad <span class="text-danger">*</span></label>
+                            <select name="prioridad" 
+                                    id="prioridad" 
+                                    class="form-select @error('prioridad') is-invalid @enderror" 
+                                    required>
+                                <option value="">Seleccione...</option>
+                                <option value="Baja" {{ old('prioridad') == 'Baja' ? 'selected' : '' }}>Baja</option>
+                                <option value="Media" {{ old('prioridad') == 'Media' ? 'selected' : '' }}>Media</option>
+                                <option value="Alta" {{ old('prioridad') == 'Alta' ? 'selected' : '' }}>Alta</option>
+                                <option value="Urgente" {{ old('prioridad') == 'Urgente' ? 'selected' : '' }}>Urgente</option>
+                            </select>
+                            @error('prioridad')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="monto_total_estimado" class="form-label">Monto Estimado (Q)</label>
+                            <input type="number" 
+                                   name="monto_total_estimado" 
+                                   id="monto_total_estimado" 
+                                   class="form-control @error('monto_total_estimado') is-invalid @enderror" 
+                                   step="0.01"
+                                   min="0"
+                                   value="{{ old('monto_total_estimado') }}"
+                                   placeholder="0.00">
+                            @error('monto_total_estimado')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Monto aproximado de la adquisición.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="fecha_limitie" class="form-label">Fecha Límite</label>
+                        <input type="date" 
+                               name="fecha_limitie" 
+                               id="fecha_limitie" 
+                               class="form-control @error('fecha_limitie') is-invalid @enderror"
+                               min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                               value="{{ old('fecha_limitie') }}">
+                        @error('fecha_limitie')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">Fecha en la que necesitas que esté completada la solicitud.</small>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ route('solicitudes.mias') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>Crear Solicitud
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    @endif
+    </div>
+</div>
 @endsection
