@@ -14,27 +14,32 @@
             </ul>
 
             <ul class="navbar-nav ms-auto">
-                <!-- Authentication Links -->
                 @auth
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ Auth::user()->nombre ?? Auth::user()->name ?? '' }}
+                        <a id="navbarDropdown" class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-person-circle text-primary fs-4"></i>
+                            <span class="fw-semibold">{{ Auth::user()->nombre ?? Auth::user()->name ?? '' }}</span>
                         </a>
-
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ route('profile.edit') }}">{{ __('Profile') }}</a>
-
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('profile.edit') }}">
+                                <i class="bi bi-person"></i>
+                                {{ __('Ver perfil') }}
+                            </a>
                             <div class="dropdown-divider"></div>
-
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="dropdown-item">{{ __('Log Out') }}</button>
+                                <button type="submit" class="dropdown-item d-flex align-items-center gap-2">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    {{ __('Cerrar sesión') }}
+                                </button>
                             </form>
                         </div>
                     </li>
                 @endauth
                 @guest
-                    <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                    </li>
                 @endguest
             </ul>
         </div>

@@ -1,8 +1,15 @@
 @extends('layouts.app')
 
+@section('header')
+    <h2 class="h4">Panel de Compras</h2>
+@endsection
+
 @section('content')
-<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-    <h1 class="text-2xl font-bold">Dashboard - Compras</h1>
-    <p>Area de compras: cotizaciones, proveedores y órdenes de compra.</p>
-</div>
+<div class="alert alert-info">Bienvenido, {{ Auth::user()->nombre }}. Aquí puedes gestionar cotizaciones y órdenes de compra.</div>
+<ul class="list-group mb-4">
+    <li class="list-group-item">Solicitudes para cotizar</li>
+    <li class="list-group-item">Gestión de cotizaciones</li>
+    <li class="list-group-item">Órdenes de compra</li>
+    <li class="list-group-item">Proveedores</li>
+</ul>
 @endsection
