@@ -6,5 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Detalle_solicitud extends Model
 {
-    //
+    protected $table = 'DETALLE_SOLICITUD';
+
+    protected $fillable = [
+        'id_detalle',
+        'id_solicitud',
+        'id_producto',
+        'cantidad',
+        'especificaciones_adicionales',
+        'precio_estimado_unitario',
+        'precio_estimado_total'
+    ];
 }
