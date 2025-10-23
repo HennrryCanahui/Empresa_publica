@@ -1,52 +1,89 @@
-<x-guest-layout>
+@extends('layouts.guest')
+
+@section('content')
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        <div class="mb-3">
+            <label for="nombre" class="form-label">{{ __('Nombre') }}</label>
+            <input id="nombre" class="form-control" type="text" name="nombre" value="{{ old('nombre') }}" required autofocus>
+            @if($errors->has('nombre'))
+                <div class="invalid-feedback d-block">{{ $errors->first('nombre') }}</div>
+            @endif
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="mb-3">
+            <label for="apellido" class="form-label">{{ __('Apellido') }}</label>
+            <input id="apellido" class="form-control" type="text" name="apellido" value="{{ old('apellido') }}" required>
+            @if($errors->has('apellido'))
+                <div class="invalid-feedback d-block">{{ $errors->first('apellido') }}</div>
+            @endif
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="mb-3">
+            <label for="correo" class="form-label">{{ __('Correo') }}</label>
+            <input id="correo" class="form-control" type="email" name="correo" value="{{ old('correo') }}" required>
+            @if($errors->has('correo'))
+                <div class="invalid-feedback d-block">{{ $errors->first('correo') }}</div>
+            @endif
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div class="mb-3">
+            <label for="telefono" class="form-label">{{ __('Teléfono') }}</label>
+            <input id="telefono" class="form-control" type="text" name="telefono" value="{{ old('telefono') }}" required>
+            @if($errors->has('telefono'))
+                <div class="invalid-feedback d-block">{{ $errors->first('telefono') }}</div>
+            @endif
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
+        <div class="mb-3">
+            <label for="id_unidad" class="form-label">{{ __('Unidad') }}</label>
+            <select id="id_unidad" class="form-select" name="id_unidad" required>
+                <option value="">Seleccione una unidad</option>
+                @foreach(\App\Models\Unidad::all() as $unidad)
+                    <option value="{{ $unidad->id_unidad }}" {{ old('id_unidad') == $unidad->id_unidad ? 'selected' : '' }}>
+                        {{ $unidad->nombre }}
+                    </option>
+                @endforeach
+            </select>
+            @if($errors->has('id_unidad'))
+                <div class="invalid-feedback d-block">{{ $errors->first('id_unidad') }}</div>
+            @endif
+        </div>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
+        <div class="mb-3">
+            <label for="rol" class="form-label">{{ __('Rol') }}</label>
+            <select id="rol" class="form-select" name="rol" required>
+                <option value="">Seleccione un rol</option>
+                <option value="Solicitante" {{ old('rol') == 'Solicitante' ? 'selected' : '' }}>Solicitante</option>
+                <option value="Compras" {{ old('rol') == 'Compras' ? 'selected' : '' }}>Compras</option>
+                <option value="Presupuesto" {{ old('rol') == 'Presupuesto' ? 'selected' : '' }}>Presupuesto</option>
+                <option value="Autoridad" {{ old('rol') == 'Autoridad' ? 'selected' : '' }}>Autoridad</option>
+            </select>
+            @if($errors->has('rol'))
+                <div class="invalid-feedback d-block">{{ $errors->first('rol') }}</div>
+            @endif
+        </div>
+
+        <div class="mb-3">
+            <label for="contrasena" class="form-label">{{ __('Contraseña') }}</label>
+            <input id="contrasena" class="form-control" type="password" name="contrasena" required>
+            @if($errors->has('contrasena'))
+                <div class="invalid-feedback d-block">{{ $errors->first('contrasena') }}</div>
+            @endif
+        </div>
+
+        <div class="mb-3">
+            <label for="contrasena_confirmation" class="form-label">{{ __('Confirmar Contraseña') }}</label>
+            <input id="contrasena_confirmation" class="form-control" type="password" name="contrasena_confirmation" required>
+            @if($errors->has('contrasena_confirmation'))
+                <div class="invalid-feedback d-block">{{ $errors->first('contrasena_confirmation') }}</div>
+            @endif
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <a class="text-decoration-none" href="{{ route('login') }}">{{ __('Already registered?') }}</a>
+            <button type="submit" class="btn btn-primary">{{ __('Register') }}</button>
         </div>
     </form>
-</x-guest-layout>
+@endsection

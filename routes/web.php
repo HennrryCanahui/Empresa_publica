@@ -16,11 +16,17 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\ProfileController;
 
 
 
 // Rutas de autenticación (Breeze las genera automáticamente)
 require __DIR__.'/auth.php';
+
+// Ruta raíz: si no está autenticado, middleware 'auth' lo llevará al login; si está autenticado, redirige al dashboard.
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+})->middleware('auth');
 
 // Rutas protegidas - Requieren autenticación
 Route::middleware(['auth'])->group(function () {
@@ -28,6 +34,12 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard general (todos los roles)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
+    // Perfil de usuario
+    Route::get('/perfil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/perfil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    Route::delete('/perfil', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     // Notificaciones (todos los roles)
     Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
     Route::post('/notificaciones/{notificacion}/leer', [NotificacionController::class, 'marcarLeida'])->name('notificaciones.leer');

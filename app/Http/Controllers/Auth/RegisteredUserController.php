@@ -30,15 +30,24 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'nombre' => ['required', 'string', 'max:255'],
+            'apellido' => ['required', 'string', 'max:255'],
+            'correo' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:USUARIO,correo'],
+            'telefono' => ['required', 'string', 'max:20'],
+            'id_unidad' => ['required', 'exists:UNIDAD,id_unidad'],
+            'rol' => ['required', 'string', 'in:Solicitante,Compras,Presupuesto,Autoridad'],
+            'contrasena' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'nombre' => $request->input('nombre'),
+            'apellido' => $request->input('apellido'),
+            'correo' => $request->input('correo'),
+            'telefono' => $request->input('telefono'),
+            'id_unidad' => $request->input('id_unidad'),
+            'rol' => $request->input('rol'),
+            'contrasena' => Hash::make($request->input('contrasena')),
+            'activo' => true,
         ]);
 
         event(new Registered($user));

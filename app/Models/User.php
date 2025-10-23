@@ -72,4 +72,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Solicitud::class, 'id_usuario_creador', 'id_usuario');
     }
+
+    /**
+     * Get the password for the user (compatibility with custom column name).
+     *
+     * @return string|null
+     */
+    public function getAuthPassword()
+    {
+        return $this->contrasena;
+    }
 }
