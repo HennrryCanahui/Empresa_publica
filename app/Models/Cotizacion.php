@@ -34,13 +34,18 @@ class Cotizacion extends Model
         return $this->hasMany(Detalle_Cotizacion::class, 'id_cotizacion', 'id_cotizacion');
     }
 
-    public function cotizaciones()
+    public function solicitud()
     {
-        return $this->hasMany(Cotizacion::class, 'id_cotizacion', 'id_cotizacion');
+        return $this->belongsTo(Solicitud::class, 'id_solicitud');
     }
 
-    public function usuario()
+    public function usuarioCompras()
     {
-        return $this->hasMany(User::class, 'id_usuario', 'id_usuario_compras');
+        return $this->belongsTo(User::class, 'id_usuario_compras');
     }
+
+    protected $primaryKey = 'id_cotizacion';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = true;
 }

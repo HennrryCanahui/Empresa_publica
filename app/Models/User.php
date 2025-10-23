@@ -45,11 +45,31 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    // Primary key configuration
+    protected $primaryKey = 'id_usuario';
+    protected $keyType = 'int';
+    public $incrementing = false;
+
+    public $timestamps = true;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string,string>
+     */
+    protected $casts = [
+        'ultimo_acceso' => 'datetime',
+        'activo' => 'boolean',
+    ];
+
+    // Relations
+    public function unidad()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'contrasena' => 'hashed',
-        ];
+        return $this->belongsTo(Unidad::class, 'id_unidad');
+    }
+
+    public function solicitudes()
+    {
+        return $this->hasMany(Solicitud::class, 'id_usuario_creador', 'id_usuario');
     }
 }

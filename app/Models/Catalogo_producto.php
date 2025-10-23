@@ -27,5 +27,15 @@ class Catalogo_producto extends Model
         return $this->belongsTo(Categoria_producto::class, 'id_categoria');
     }
 
+    public function detallesCotizacion()
+    {
+        return $this->hasMany(Detalle_Cotizacion::class, 'id_producto', 'id_producto');
+    }
+
+    protected $primaryKey = 'id_producto';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = true;
+
 
 }

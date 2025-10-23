@@ -19,4 +19,14 @@ class Proveedor extends Model
         'contacto_principal',
         'activo'
     ];
+
+    protected $primaryKey = 'id_proveedor';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = true;
+
+    public function cotizaciones()
+    {
+        return $this->hasMany(Cotizacion::class, 'id_proveedor', 'id_proveedor');
+    }
 }

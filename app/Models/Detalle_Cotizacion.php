@@ -27,4 +27,9 @@ class Detalle_Cotizacion extends Model
         return $this->belongsTo(Catalogo_producto::class);
     }
 
+    protected $primaryKey = 'id_detalle_cotizacion';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = false;
+
 }

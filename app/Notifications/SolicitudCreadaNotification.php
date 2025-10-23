@@ -8,6 +8,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\DatabaseMessage;
 use App\Models\Solicitud;
+use App\Models\User;
+
 
 
 class SolicitudCreadaNotification extends Notification
@@ -46,13 +48,13 @@ class SolicitudCreadaNotification extends Notification
     /**
      * Get the mail representation of the notification.
      */
-   // Enviar notificación
-    use App\Models\Usuario;
-    use App\Notifications\SolicitudCreadaNotification;
-
-    // A todos los usuarios con rol Presupuesto
-    $usuariosPresupuesto = Usuario::role('Presupuesto')->get();
-    foreach($usuariosPresupuesto as $usuario) {
-        $usuario->notify(new SolicitudCreadaNotification($solicitud));
+    // Método para enviar notificación
+    public function enviarNotificacion(Solicitud $solicitud)
+    {
+        // A todos los usuarios con rol Presupuesto
+        $usuariosPresupuesto = User::role('Presupuesto')->get();
+        foreach($usuariosPresupuesto as $usuario) {
+            $usuario->notify(new SolicitudCreadaNotification($solicitud));
+        }
     }
 }

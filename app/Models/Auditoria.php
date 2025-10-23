@@ -17,6 +17,15 @@ class Auditoria extends Model
         'datos_nuevos',
         'id_usuario',
         'fecha_accion',
-        'id_address'
+        'ip_address'
+    ];
+
+    protected $primaryKey = 'id_auditoria';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = false;
+
+    protected $casts = [
+        'fecha_accion' => 'datetime',
     ];
 }

@@ -28,4 +28,9 @@ class Aprobacion extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario_autoridad');
     }
+
+    protected $primaryKey = 'id_aprobacion';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = true;
 }

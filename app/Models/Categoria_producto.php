@@ -15,4 +15,14 @@ class Categoria_producto extends Model
         'descripcion',
         'activo'
     ];
+
+    protected $primaryKey = 'id_categoria';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = true;
+
+    public function productos()
+    {
+        return $this->hasMany(Catalogo_producto::class, 'id_categoria', 'id_categoria');
+    }
 }

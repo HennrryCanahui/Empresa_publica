@@ -18,4 +18,19 @@ class Presupuesto extends Model
         'fecha_revision',
         'id_usuario_presupuestario'
     ];
+
+    protected $primaryKey = 'id_presupuesto';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = true;
+
+    public function solicitud()
+    {
+        return $this->belongsTo(Solicitud::class, 'id_solicitud');
+    }
+
+    public function usuarioPresupuesto()
+    {
+        return $this->belongsTo(User::class, 'id_usuario_presupuestario');
+    }
 }

@@ -15,12 +15,28 @@ class Adquisicion extends Model
         'id_cotizacion_seleccionada',
         'id_proveedor',
         'numero_factura',
+        'monto_final',
         'fecha_adquisicion',
         'estado_entrega',
         'fecha_entrega_programada',
         'fecha_entrega_real',
         'observaciones',
         'id_usuario_compras'
+    ];
+
+    // Primary key and timestamps
+    protected $primaryKey = 'id_adquisicion';
+    protected $keyType = 'int';
+    public $incrementing = false;
+    public $timestamps = true;
+
+    protected $casts = [
+        'fecha_adquisicion' => 'datetime',
+        'fecha_entrega_programada' => 'datetime',
+        'fecha_entrega_real' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'monto_final' => 'decimal:2',
     ];
 
     public function solicitud()
