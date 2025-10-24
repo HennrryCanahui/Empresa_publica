@@ -21,12 +21,12 @@ class Aprobacion extends Model
 
     public function solicitud()
     {
-        return $this->belongsTo(Solicitud::class, 'id_solicitud');
+        return $this->belongsTo(Solicitud::class, 'id_solicitud', 'id_solicitud');
     }
 
     public function usuarioAutoridad()
     {
-        return $this->belongsTo(User::class, 'id_usuario_autoridad');
+        return $this->belongsTo(User::class, 'id_usuario_autoridad', 'id_usuario');
     }
 
     protected $primaryKey = 'id_aprobacion';

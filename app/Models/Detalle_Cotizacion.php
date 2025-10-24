@@ -13,6 +13,8 @@ class Detalle_Cotizacion extends Model
         'id_cotizacion',
         'id_producto',
         'cantidad',
+        'unidad_medida',
+        'descripcion_proveedor',
         'precio_unitario',
         'precio_total',
         'observaciones'
@@ -20,11 +22,12 @@ class Detalle_Cotizacion extends Model
 
     public function cotizacion()
     {
-        return $this->belongsTo(Cotizacion::class);
+        return $this->belongsTo(Cotizacion::class, 'id_cotizacion', 'id_cotizacion');
     }
+
     public function producto()
     {
-        return $this->belongsTo(Catalogo_producto::class);
+        return $this->belongsTo(Catalogo_producto::class, 'id_producto', 'id_producto');
     }
 
     protected $primaryKey = 'id_detalle_cotizacion';

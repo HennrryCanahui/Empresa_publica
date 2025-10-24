@@ -35,15 +35,25 @@ class Solicitud extends Model
         return 'id_solicitud';
     }
 
-    // ... resto de las relaciones
+    // Relaciones
+    public function unidad()
+    {
+        return $this->belongsTo(Unidad::class, 'id_unida_solicitante', 'id_unidad');
+    }
+
     public function unidadSolicitante()
     {
-        return $this->belongsTo(Unidad::class, 'id_unida_solicitante');
+        return $this->unidad();
+    }
+
+    public function solicitante()
+    {
+        return $this->belongsTo(User::class, 'id_usuario_creador', 'id_usuario');
     }
 
     public function usuarioCreador()
     {
-        return $this->belongsTo(User::class, 'id_usuario_creador');
+        return $this->solicitante();
     }
 
     public function detalles()
@@ -74,6 +84,11 @@ class Solicitud extends Model
     public function documentos()
     {
         return $this->hasMany(Documento_adjunto::class, 'id_solicitud', 'id_solicitud');
+    }
+
+    public function adquisicion()
+    {
+        return $this->hasOne(Adquisicion::class, 'id_solicitud', 'id_solicitud');
     }
 
     public function adquisiciones()

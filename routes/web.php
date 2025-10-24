@@ -46,58 +46,60 @@ Route::middleware(['auth'])->group(function () {
     // SOLICITANTE - Gestión de solicitudes propias
     // ========================================
     Route::middleware(['role:Solicitante,Admin'])->group(function () {
-        Route::get('/solicitudes', [SolicitudController::class, 'misSolicitudes'])->name('solicitudes.index');
+        Route::get('/solicitudes', [SolicitudController::class, 'index'])->name('solicitudes.index');
         Route::get('/solicitudes/crear', [SolicitudController::class, 'create'])->name('solicitudes.create');
         Route::post('/solicitudes', [SolicitudController::class, 'store'])->name('solicitudes.store');
         Route::get('/solicitudes/{solicitud}', [SolicitudController::class, 'show'])->name('solicitudes.show');
         Route::get('/solicitudes/{solicitud}/editar', [SolicitudController::class, 'edit'])->name('solicitudes.edit');
         Route::put('/solicitudes/{solicitud}', [SolicitudController::class, 'update'])->name('solicitudes.update');
-        Route::patch('/solicitudes/{solicitud}/anular', [SolicitudController::class, 'anular'])->name('solicitudes.anular');
-        Route::patch('/solicitudes/{solicitud}/reabrir', [SolicitudController::class, 'reabrir'])->name('solicitudes.reabrir');
         Route::get('/solicitudes/{solicitud}/historial', [SolicitudController::class, 'historial'])->name('solicitudes.historial');
-        Route::post('/solicitudes/{solicitud}/cambiar-estado', [SolicitudController::class, 'cambiarEstado'])->name('solicitudes.cambiarEstado');
+        Route::post('/solicitudes/{solicitud}/enviar-presupuesto', [SolicitudController::class, 'enviarAPresupuesto'])->name('solicitudes.enviar-presupuesto');
+        Route::post('/solicitudes/{solicitud}/cancelar', [SolicitudController::class, 'cancelar'])->name('solicitudes.cancelar');
     });
     
     // ========================================
     // PRESUPUESTO - Validación presupuestaria
     // ========================================
     Route::middleware(['role:Presupuesto,Admin'])->group(function () {
-        Route::get('/presupuesto/pendientes', [PresupuestoController::class, 'pendientes'])->name('presupuesto.pendientes');
+        Route::get('/presupuesto', [PresupuestoController::class, 'index'])->name('presupuesto.index');
         Route::get('/presupuesto/{solicitud}/validar', [PresupuestoController::class, 'validar'])->name('presupuesto.validar');
-        Route::post('/presupuesto', [PresupuestoController::class, 'store'])->name('presupuesto.store');
+        Route::post('/presupuesto/{solicitud}/procesar', [PresupuestoController::class, 'procesarValidacion'])->name('presupuesto.procesar');
+        Route::get('/presupuesto/historial', [PresupuestoController::class, 'historial'])->name('presupuesto.historial');
+        Route::get('/presupuesto/ver/{presupuesto}', [PresupuestoController::class, 'ver'])->name('presupuesto.ver');
     });
     
     // ========================================
     // COMPRAS - Cotizaciones y Adquisiciones
     // ========================================
     Route::middleware(['role:Compras,Admin'])->group(function () {
-        Route::get('/compras/solicitudes', [CotizacionController::class, 'solicitudesPresupuestadas'])->name('compras.solicitudes');
+        Route::get('/compras', [CotizacionController::class, 'index'])->name('compras.index');
         
-        Route::get('/cotizaciones/{solicitud}', [CotizacionController::class, 'index'])->name('cotizaciones.index');
-        Route::get('/cotizaciones/{solicitud}/crear', [CotizacionController::class, 'create'])->name('cotizaciones.create');
+        Route::get('/cotizaciones/crear/{solicitud}', [CotizacionController::class, 'create'])->name('cotizaciones.create');
         Route::post('/cotizaciones', [CotizacionController::class, 'store'])->name('cotizaciones.store');
-        Route::get('/cotizaciones/{cotizacion}/editar', [CotizacionController::class, 'edit'])->name('cotizaciones.edit');
-        Route::put('/cotizaciones/{cotizacion}', [CotizacionController::class, 'update'])->name('cotizaciones.update');
+        Route::get('/cotizaciones/comparar/{solicitud}', [CotizacionController::class, 'comparar'])->name('cotizaciones.comparar');
         Route::post('/cotizaciones/{cotizacion}/seleccionar', [CotizacionController::class, 'seleccionar'])->name('cotizaciones.seleccionar');
-        Route::post('/cotizaciones/{cotizacion}/descartar', [CotizacionController::class, 'descartar'])->name('cotizaciones.descartar');
+        Route::post('/cotizaciones/enviar-aprobacion/{solicitud}', [CotizacionController::class, 'enviarAAprobacion'])->name('cotizaciones.enviar-aprobacion');
+        Route::get('/cotizaciones/ver/{cotizacion}', [CotizacionController::class, 'ver'])->name('cotizaciones.ver');
         
         Route::resource('proveedores', ProveedorController::class);
         
-        Route::get('/ordenes', [AdquisicionController::class, 'index'])->name('ordenes.index');
-        Route::get('/ordenes/crear/{solicitud}', [AdquisicionController::class, 'create'])->name('ordenes.create');
-        Route::post('/ordenes', [AdquisicionController::class, 'store'])->name('ordenes.store');
-        Route::get('/ordenes/{adquisicion}', [AdquisicionController::class, 'show'])->name('ordenes.show');
-        Route::post('/ordenes/{adquisicion}/entrega', [AdquisicionController::class, 'registrarEntrega'])->name('ordenes.entrega');
+        Route::get('/adquisiciones', [AdquisicionController::class, 'index'])->name('adquisiciones.index');
+        Route::get('/adquisiciones/crear/{solicitud}', [AdquisicionController::class, 'create'])->name('adquisiciones.create');
+        Route::post('/adquisiciones', [AdquisicionController::class, 'store'])->name('adquisiciones.store');
+        Route::get('/adquisiciones/ver/{adquisicion}', [AdquisicionController::class, 'ver'])->name('adquisiciones.ver');
+        Route::post('/adquisiciones/{adquisicion}/entrega', [AdquisicionController::class, 'actualizarEntrega'])->name('adquisiciones.entrega');
+        Route::get('/adquisiciones/historial', [AdquisicionController::class, 'historial'])->name('adquisiciones.historial');
     });
     
     // ========================================
     // AUTORIDAD - Aprobación de solicitudes
     // ========================================
     Route::middleware(['role:Autoridad,Admin'])->group(function () {
-        Route::get('/aprobacion/pendientes', [AprobacionController::class, 'pendientes'])->name('aprobacion.pendientes');
-        Route::get('/aprobacion/{solicitud}', [AprobacionController::class, 'show'])->name('aprobacion.show');
-        Route::post('/aprobacion', [AprobacionController::class, 'store'])->name('aprobacion.store');
-        Route::get('/aprobacion/{solicitud}/comparar-cotizaciones', [AprobacionController::class, 'compararCotizaciones'])->name('aprobacion.comparar');
+        Route::get('/aprobacion', [AprobacionController::class, 'index'])->name('aprobacion.index');
+        Route::get('/aprobacion/revisar/{solicitud}', [AprobacionController::class, 'revisar'])->name('aprobacion.revisar');
+        Route::post('/aprobacion/procesar/{solicitud}', [AprobacionController::class, 'procesar'])->name('aprobacion.procesar');
+        Route::get('/aprobacion/historial', [AprobacionController::class, 'historial'])->name('aprobacion.historial');
+        Route::get('/aprobacion/ver/{aprobacion}', [AprobacionController::class, 'ver'])->name('aprobacion.ver');
     });
     
     // ========================================

@@ -16,17 +16,21 @@ class Cotizacion extends Model
         'monto_total',
         'documento_cotizacion',
         'fecha_cotizacion',
+        'vigencia_cotizacion',
         'fecha_validez',
+        'tiempo_entrega',
         'tiempo_entrega_dias',
+        'garantia',
         'condiciones_pago',
         'id_usuario_compras',
         'estado',
+        'seleccionada',
         'observaciones'
     ];
 
     public function proveedor()
     {
-        return $this->belongsTo(Proveedor::class);
+        return $this->belongsTo(Proveedor::class, 'id_proveedor', 'id_proveedor');
     }
 
     public function detalles()
@@ -36,12 +40,12 @@ class Cotizacion extends Model
 
     public function solicitud()
     {
-        return $this->belongsTo(Solicitud::class, 'id_solicitud');
+        return $this->belongsTo(Solicitud::class, 'id_solicitud', 'id_solicitud');
     }
 
     public function usuarioCompras()
     {
-        return $this->belongsTo(User::class, 'id_usuario_compras');
+        return $this->belongsTo(User::class, 'id_usuario_compras', 'id_usuario');
     }
 
     protected $primaryKey = 'id_cotizacion';

@@ -25,18 +25,19 @@ class DashboardController extends Controller
 
         switch ($role) {
             case 'admin':
-                return view('dashboard.admin');
+                // Admin no tiene dashboard propio, mostrar vista dashboard con rol Admin
+                return view('dashboard');
             case 'presupuesto':
-                return view('dashboard.presupuesto');
+                return redirect()->route('presupuesto.index');
             case 'compras':
-                return view('dashboard.compras');
+                return redirect()->route('compras.index');
             case 'autoridad':
-                return view('dashboard.autoridad');
+                return redirect()->route('aprobacion.index');
             case 'solicitante':
-                return view('dashboard.solicitante');
+                return redirect()->route('solicitudes.index');
             default:
-                // Si rol desconocido, mostrar una vista genérica o layout con mensaje
-                return view('errors.404');
+                // Si rol desconocido, mostrar dashboard básico
+                return view('dashboard');
         }
     }
 }

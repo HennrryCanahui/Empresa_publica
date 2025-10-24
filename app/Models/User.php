@@ -82,4 +82,39 @@ class User extends Authenticatable
     {
         return $this->contrasena;
     }
+
+    /**
+     * Verifica si el usuario tiene un rol específico (comparación no sensible a mayúsculas/minúsculas).
+     */
+    public function hasRole(string $role): bool
+    {
+        $current = $this->rol ?? '';
+        return strcasecmp($current, $role) === 0;
+    }
+
+    /**
+     * Verifica si el usuario tiene alguno de los roles indicados.
+     * Acepta array o string separado por comas. El rol "Admin" tiene acceso a todo.
+     *
+     * @param array<string>|string $roles
+     */
+    public function hasAnyRole(array|string $roles): bool
+    {
+        // Superusuario
+        if (strcasecmp($this->rol ?? '', 'Admin') === 0) {
+            return true;
+        }
+
+        if (is_string($roles)) {
+            // Permitir cadena "Rol1,Rol2"
+            $roles = array_map('trim', explode(',', $roles));
+        }
+
+        foreach ($roles as $role) {
+            if ($this->hasRole($role)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
