@@ -11,23 +11,25 @@ class Presupuesto extends Model
     protected $fillable = [
         'id_presupuesto',
         'id_solicitud',
-        'monto_presupuestado',
         'monto_estimado',
         'partida_presupuestaria',
         'disponibilidad_actual',
-        'validado',
         'validacion',
-        'fecha_validacion',
-        'fecha_revision',
         'observaciones',
-        'id_usuario_presupuesto',
-        'id_usuario_presupuestario'
+        'fecha_revision',
+        'id_usuario_presupuesto'
     ];
 
     protected $primaryKey = 'id_presupuesto';
     protected $keyType = 'int';
     public $incrementing = false;
-    public $timestamps = true;
+    public $timestamps = false;
+
+    protected $casts = [
+        'fecha_revision' => 'datetime',
+        'disponibilidad_actual' => 'decimal:2',
+        'monto_estimado' => 'decimal:2'
+    ];
 
     public function solicitud()
     {
@@ -37,10 +39,5 @@ class Presupuesto extends Model
     public function usuarioPresupuesto()
     {
         return $this->belongsTo(User::class, 'id_usuario_presupuesto', 'id_usuario');
-    }
-
-    public function usuarioPresupuestario()
-    {
-        return $this->usuarioPresupuesto();
     }
 }

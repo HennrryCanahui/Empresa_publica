@@ -15,10 +15,10 @@ class Solicitud extends Model
         'descripcion',
         'justificacion',
         'estado',
-        'id_unida_solicitante',
+        'id_unidad_solicitante',
         'id_usuario_creador',
         'prioridad',
-        'fecha_limitie',
+        'fecha_limite',
         'monto_total_estimado'
     ];
 
@@ -26,6 +26,12 @@ class Solicitud extends Model
     protected $keyType = 'int';
     public $incrementing = false;
     public $timestamps = true;
+
+    protected $casts = [
+        'fecha_creacion' => 'datetime',
+        'fecha_limite' => 'date',
+        'monto_total_estimado' => 'decimal:2'
+    ];
 
     /**
      * Obtener la clave de ruta para el modelo.
@@ -38,7 +44,7 @@ class Solicitud extends Model
     // Relaciones
     public function unidad()
     {
-        return $this->belongsTo(Unidad::class, 'id_unida_solicitante', 'id_unidad');
+        return $this->belongsTo(Unidad::class, 'id_unidad_solicitante', 'id_unidad');
     }
 
     public function unidadSolicitante()
@@ -71,9 +77,9 @@ class Solicitud extends Model
         return $this->hasMany(Cotizacion::class, 'id_solicitud', 'id_solicitud');
     }
 
-    public function aprobaciones()
+    public function aprobacion()
     {
-        return $this->hasMany(Aprobacion::class, 'id_solicitud', 'id_solicitud');
+        return $this->hasOne(Aprobacion::class, 'id_solicitud', 'id_solicitud');
     }
 
     public function historialEstados()
@@ -89,10 +95,5 @@ class Solicitud extends Model
     public function adquisicion()
     {
         return $this->hasOne(Adquisicion::class, 'id_solicitud', 'id_solicitud');
-    }
-
-    public function adquisiciones()
-    {
-        return $this->hasMany(Adquisicion::class, 'id_solicitud', 'id_solicitud');
     }
 }
