@@ -87,7 +87,7 @@
                 <small class="text-muted">{{ Str::limit($p->solicitud->descripcion ?? '', 40) }}</small>
               </td>
               <td>
-                <small>{{ $p->solicitud->unidadSolicitante->nombre_unidad ?? 'N/A' }}</small>
+                <small>{{ $p->solicitud->unidadSolicitante->nombre ?? 'N/A' }}</small>
               </td>
               <td>
                 <span class="badge bg-info">{{ $p->partida_presupuestaria }}</span>

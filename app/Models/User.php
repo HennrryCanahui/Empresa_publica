@@ -48,7 +48,7 @@ class User extends Authenticatable
     // Primary key configuration
     protected $primaryKey = 'id_usuario';
     protected $keyType = 'int';
-    public $incrementing = false;
+    public $incrementing = true;
 
     public $timestamps = true;
 

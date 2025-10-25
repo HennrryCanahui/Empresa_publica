@@ -90,7 +90,7 @@
     @endif
   </div>
   <div class="card-footer bg-white">
-    <a href="{{ route('cotizaciones.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Regresar</a>
+    <a href="{{ route('compras.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Regresar</a>
     @if($cotizacion->solicitud)
       <a href="{{ route('cotizaciones.comparar', $cotizacion->id_solicitud) }}" class="btn btn-outline-info"><i class="bi bi-arrow-left-right me-1"></i>Comparar cotizaciones</a>
     @endif

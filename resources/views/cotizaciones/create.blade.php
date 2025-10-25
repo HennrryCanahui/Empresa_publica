@@ -3,7 +3,7 @@
 @section('header')
 <div class="d-flex justify-content-between align-items-center">
     <h2 class="h4 mb-0"><i class="bi bi-receipt me-2"></i>Nueva Cotización</h2>
-    <a href="{{ route('cotizaciones.index') }}" class="btn btn-outline-secondary">
+    <a href="{{ route('compras.index') }}" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>Cancelar
     </a>
 </div>
@@ -223,7 +223,7 @@
             <button type="submit" class="btn btn-success btn-lg">
               <i class="bi bi-save me-1"></i>Guardar Cotización
             </button>
-            <a href="{{ route('cotizaciones.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('compras.index') }}" class="btn btn-outline-secondary">
               <i class="bi bi-x-circle me-1"></i>Cancelar
             </a>
           </div>

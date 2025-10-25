@@ -24,13 +24,13 @@ class UnidadController extends Controller
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
             $query->where(function($q) use ($buscar) {
-                $q->where('nombre_unidad', 'like', "%{$buscar}%")
+                $q->where('nombre', 'like', "%{$buscar}%")
                   ->orWhere('descripcion', 'like', "%{$buscar}%");
             });
         }
 
         $unidades = $query->orderBy('activo', 'desc')
-                         ->orderBy('nombre_unidad')
+                         ->orderBy('nombre')
                          ->paginate(15);
 
         return view('admin.unidades.index', compact('unidades'));
@@ -50,7 +50,7 @@ class UnidadController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre_unidad' => 'required|string|max:100|unique:UNIDAD,nombre_unidad',
+            'nombre' => 'required|string|max:100|unique:UNIDAD,nombre',
             'descripcion' => 'nullable|string|max:500',
             'activo' => 'boolean'
         ]);
@@ -62,7 +62,7 @@ class UnidadController extends Controller
 
             $unidad = new Unidad();
             $unidad->id_unidad = $nextId;
-            $unidad->nombre_unidad = $validated['nombre_unidad'];
+            $unidad->nombre = $validated['nombre'];
             $unidad->descripcion = $validated['descripcion'] ?? null;
             $unidad->activo = $request->has('activo') ? true : false;
             $unidad->save();
@@ -101,14 +101,14 @@ class UnidadController extends Controller
     public function update(Request $request, Unidad $unidad)
     {
         $validated = $request->validate([
-            'nombre_unidad' => 'required|string|max:100|unique:UNIDAD,nombre_unidad,' . $unidad->id_unidad . ',id_unidad',
+            'nombre' => 'required|string|max:100|unique:UNIDAD,nombre,' . $unidad->id_unidad . ',id_unidad',
             'descripcion' => 'nullable|string|max:500',
             'activo' => 'boolean'
         ]);
 
         DB::beginTransaction();
         try {
-            $unidad->nombre_unidad = $validated['nombre_unidad'];
+            $unidad->nombre = $validated['nombre'];
             $unidad->descripcion = $validated['descripcion'] ?? null;
             $unidad->activo = $request->has('activo') ? true : false;
             $unidad->save();

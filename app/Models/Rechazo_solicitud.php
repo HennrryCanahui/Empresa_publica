@@ -17,6 +17,6 @@ class Rechazo_solicitud extends Model
     ];
 
     protected $primaryKey = 'id_rechazo';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = false;
 }

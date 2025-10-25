@@ -59,7 +59,7 @@
                 {{ __('Iniciar Sesión') }}
             </button>
         </div>
-
+{{--        @if (Route::has('password.request'))
         @if (Route::has('password.request'))
             <div class="text-center mt-4">
                 <a class="text-decoration-none" href="{{ route('password.request') }}">
@@ -67,5 +67,6 @@
                 </a>
             </div>
         @endif
+        ----- IGNORE ---}}
     </form>
 @endsection

@@ -48,7 +48,7 @@ class UsuarioController extends Controller
                          ->paginate(15);
 
         $unidades = Unidad::where('activo', true)
-                         ->orderBy('nombre_unidad')
+                         ->orderBy('nombre')
                          ->get();
 
         $roles = ['Solicitante', 'Presupuesto', 'Compras', 'Autoridad', 'Admin'];
@@ -62,7 +62,7 @@ class UsuarioController extends Controller
     public function create()
     {
         $unidades = Unidad::where('activo', true)
-                         ->orderBy('nombre_unidad')
+                         ->orderBy('nombre')
                          ->get();
 
         $roles = ['Solicitante', 'Presupuesto', 'Compras', 'Autoridad', 'Admin'];
@@ -129,7 +129,7 @@ class UsuarioController extends Controller
     public function edit(User $usuario)
     {
         $unidades = Unidad::where('activo', true)
-                         ->orderBy('nombre_unidad')
+                         ->orderBy('nombre')
                          ->get();
 
         $roles = ['Solicitante', 'Presupuesto', 'Compras', 'Autoridad', 'Admin'];

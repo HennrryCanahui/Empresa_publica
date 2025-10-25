@@ -90,7 +90,7 @@
                   <small>{{ $a->solicitud->unidadSolicitante->nombre ?? 'N/A' }}</small>
                 </td>
                 <td>
-                  <small>{{ $a->solicitud->usuarioCreador->name ?? 'N/A' }}</small>
+                  <small>{{ trim(($a->solicitud->usuarioCreador->nombre ?? '') . ' ' . ($a->solicitud->usuarioCreador->apellido ?? '')) ?: 'N/A' }}</small>
                 </td>
                 <td>
                   @if($a->decision == 'Aprobada')
@@ -105,7 +105,7 @@
                 </td>
                 <td class="fw-bold text-success">Q {{ number_format($a->monto_aprobado ?? 0, 2) }}</td>
                 <td>
-                  <small>{{ $a->usuarioAutoridad->name ?? 'N/A' }}</small>
+                  <small>{{ trim(($a->usuarioAutoridad->nombre ?? '') . ' ' . ($a->usuarioAutoridad->apellido ?? '')) ?: 'N/A' }}</small>
                 </td>
                 <td>
                   <small data-bs-toggle="tooltip" title="{{ $a->observaciones }}">

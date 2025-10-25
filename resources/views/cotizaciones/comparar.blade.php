@@ -1,136 +1,71 @@
-@extends('layouts.app')@extends('layouts.app')
+@extends('layouts.app')
 
+@section('header')
+<div class="d-flex justify-content-between align-items-center">
+  <h2 class="h4 mb-0"><i class="bi bi-diagram-3 me-2"></i>Comparar Cotizaciones</h2>
+  <div>
+    <a href="{{ route('cotizaciones.create', $solicitud->id_solicitud) }}" class="btn btn-outline-primary me-2">
+      <i class="bi bi-plus-circle me-1"></i>Nueva Cotización
+    </a>
+    <a href="{{ route('compras.index') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+  </div>
+  </div>
+@endsection
 
+@section('content')
 
-@section('header')@section('header')
+@if(session('success'))
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
+@if(session('error'))
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+@endif
 
-<div class="d-flex justify-content-between align-items-center"><h2 class="h4 mb-0"><i class="bi bi-bar-chart-steps me-2"></i>Comparar Cotizaciones</h2>
-
-    <h2 class="h4 mb-0"><i class="bi bi-diagram-3 me-2"></i>Comparar Cotizaciones</h2>@endsection
-
-    <div>
-
-        <a href="{{ route('cotizaciones.create', $solicitud->id_solicitud) }}" class="btn btn-outline-primary me-2">@section('content')
-
-            <i class="bi bi-plus-circle me-1"></i>Nueva Cotización<div class="card mb-3">
-
-        </a>  <div class="card-header bg-white">Solicitud: <strong>{{ $solicitud->numero_solicitud }}</strong></div>
-
-        <a href="{{ route('cotizaciones.index') }}" class="btn btn-outline-secondary">  <div class="card-body">
-
-            <i class="bi bi-arrow-left me-1"></i>Volver    <p class="mb-0">{{ $solicitud->descripcion }}</p>
-
-        </a>  </div>
-
-    </div></div>
-
-</div>
-
-@endsection@if($solicitud->cotizaciones->count())
-
-  @foreach($solicitud->cotizaciones as $c)
-
-@section('content')    <div class="card mb-3">
-
-      <div class="card-header d-flex justify-content-between align-items-center">
-
-@if(session('success'))        <div>
-
-    <div class="alert alert-success alert-dismissible fade show" role="alert">          <strong>{{ $c->numero_cotizacion }}</strong>
-
-        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}          <div class="text-muted">{{ $c->proveedor->razon_social ?? '' }}</div>
-
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>        </div>
-
-    </div>        <span class="badge {{ $c->estado === 'Seleccionada' ? 'bg-success' : ($c->estado === 'Activa' ? 'bg-info' : 'bg-secondary') }}">{{ $c->estado }}</span>
-
-@endif      </div>
-
-      <div class="card-body">
-
-@if(session('error'))        <div class="row mb-3">
-
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">          <div class="col-md-3"><small class="text-muted">Monto total</small><div class="fw-bold">Q {{ number_format($c->monto_total, 2) }}</div></div>
-
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}          <div class="col-md-3"><small class="text-muted">Entrega</small><div>{{ $c->tiempo_entrega_dias }} días</div></div>
-
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>          <div class="col-md-6"><small class="text-muted">Cond. de pago</small><div>{{ $c->condiciones_pago }}</div></div>
-
-    </div>        </div>
-
-@endif        <div class="table-responsive">
-
-          <table class="table table-sm">
-
-<!-- Información de la Solicitud -->            <thead class="table-light"><tr><th>Producto</th><th>Cant.</th><th>P. Unit.</th><th>Total</th></tr></thead>
-
-<div class="card mb-4">            <tbody>
-
-  <div class="card-header bg-primary text-white">              @foreach($c->detalles as $d)
-
-    <i class="bi bi-file-text me-2"></i>Solicitud: <strong>{{ $solicitud->numero_solicitud }}</strong>                <tr>
-
-  </div>                  <td>{{ $d->producto->nombre ?? '' }}</td>
-
-  <div class="card-body">                  <td>{{ $d->cantidad }}</td>
-
-    <div class="row">                  <td>Q {{ number_format($d->precio_unitario, 2) }}</td>
-
-      <div class="col-md-6">                  <td class="fw-bold">Q {{ number_format($d->precio_total, 2) }}</td>
-
-        <p class="mb-2"><strong><i class="bi bi-building text-primary me-2"></i>Unidad:</strong> {{ $solicitud->unidadSolicitante->nombre ?? 'N/A' }}</p>                </tr>
-
-        <p class="mb-2"><strong><i class="bi bi-person text-primary me-2"></i>Solicitante:</strong> {{ $solicitud->usuarioCreador->name ?? 'N/A' }}</p>              @endforeach
-
-        <p class="mb-0"><strong><i class="bi bi-calendar3 text-primary me-2"></i>Fecha:</strong> {{ $solicitud->fecha_creacion->format('d/m/Y') }}</p>            </tbody>
-
-      </div>          </table>
-
-      <div class="col-md-6">        </div>
-
-        <p class="mb-2"><strong><i class="bi bi-chat-left-text text-primary me-2"></i>Descripción:</strong> {{ $solicitud->descripcion }}</p>
-
-        <p class="mb-2"><strong><i class="bi bi-cash text-success me-2"></i>Monto Estimado:</strong> Q {{ number_format($solicitud->monto_total_estimado ?? 0, 2) }}</p>        @if($c->estado === 'Activa' && (Auth::user()->hasRole('Compras') || Auth::user()->hasRole('Admin')))
-
-        <p class="mb-0"><strong><i class="bi bi-speedometer2 text-warning me-2"></i>Prioridad:</strong>           <form action="{{ route('cotizaciones.seleccionar', $c->id_cotizacion) }}" method="POST" class="d-flex gap-2">
-
-          @if($solicitud->prioridad == 'Urgente')            @csrf
-
-            <span class="badge bg-danger">Urgente</span>            <input type="hidden" name="justificacion" value="Seleccionada por mejor relación costo/beneficio.">
-
-          @elseif($solicitud->prioridad == 'Alta')            <button class="btn btn-success" type="submit"><i class="bi bi-check2-circle me-1"></i>Seleccionar</button>
-
-            <span class="badge bg-warning text-dark">Alta</span>          </form>
-
-          @else        @endif
-
-            <span class="badge bg-info">{{ $solicitud->prioridad }}</span>      </div>
-
-          @endif    </div>
-
-        </p>  @endforeach
-
+<!-- Información de la Solicitud -->
+<div class="card mb-4">
+  <div class="card-header bg-primary text-white">
+    <i class="bi bi-file-text me-2"></i>Solicitud: <strong>{{ $solicitud->numero_solicitud }}</strong>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <p class="mb-2"><strong><i class="bi bi-building text-primary me-2"></i>Unidad:</strong> {{ $solicitud->unidadSolicitante->nombre ?? 'N/A' }}</p>
+        <p class="mb-2"><strong><i class="bi bi-person text-primary me-2"></i>Solicitante:</strong> {{ trim(($solicitud->usuarioCreador->nombre ?? '') . ' ' . ($solicitud->usuarioCreador->apellido ?? '')) ?: 'N/A' }}</p>
+        <p class="mb-0"><strong><i class="bi bi-calendar3 text-primary me-2"></i>Fecha:</strong> {{ $solicitud->fecha_creacion->format('d/m/Y') }}</p>
       </div>
+      <div class="col-md-6">
+        <p class="mb-2"><strong><i class="bi bi-chat-left-text text-primary me-2"></i>Descripción:</strong> {{ $solicitud->descripcion }}</p>
+        <p class="mb-2"><strong><i class="bi bi-cash text-success me-2"></i>Monto Estimado:</strong> Q {{ number_format($solicitud->monto_total_estimado ?? 0, 2) }}</p>
+        <p class="mb-0"><strong><i class="bi bi-speedometer2 text-warning me-2"></i>Prioridad:</strong>
+          @if($solicitud->prioridad == 'Urgente')
+            <span class="badge bg-danger">Urgente</span>
+          @elseif($solicitud->prioridad == 'Alta')
+            <span class="badge bg-warning text-dark">Alta</span>
+          @elseif($solicitud->prioridad == 'Media')
+            <span class="badge bg-info">Media</span>
+          @else
+            <span class="badge bg-secondary">Baja</span>
+          @endif
+        </p>
+      </div>
+    </div>
+  </div>
+  </div>
 
-    </div>  @if(Auth::user()->hasAnyRole(['Compras','Admin']))
+@if($solicitud->cotizaciones->count())
 
-  </div>    <form action="{{ route('cotizaciones.enviar-aprobacion', $solicitud->id_solicitud) }}" method="POST" class="text-end">
-
-</div>      @csrf
-
-      <button class="btn btn-primary"><i class="bi bi-send me-1"></i>Enviar a aprobación</button>
-
-@if($solicitud->cotizaciones->count())    </form>
-
-  @endif
-
-  <!-- Resumen Comparativo -->@else
-
-  <div class="row mb-4">  <div class="alert alert-info">Aún no hay cotizaciones para esta solicitud.</div>
-
-    <div class="col-md-3">@endif
-
-      <div class="card text-center border-info">@endsection
+  <!-- Resumen Comparativo -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card text-center border-info">
         <div class="card-body">
           <i class="bi bi-file-earmark-text display-4 text-info"></i>
           <h3 class="mt-2">{{ $solicitud->cotizaciones->count() }}</h3>
@@ -198,15 +133,14 @@
         </div>
       </div>
       <div class="card-body">
-        <!-- Información del Proveedor y Condiciones -->
         <div class="row mb-3">
           <div class="col-md-2">
             <small class="text-muted d-block"><i class="bi bi-calendar-event me-1"></i>Fecha</small>
-            <div class="fw-bold">{{ $c->fecha_cotizacion->format('d/m/Y') }}</div>
+            <div class="fw-bold">{{ $c->fecha_cotizacion ? \Carbon\Carbon::parse($c->fecha_cotizacion)->format('d/m/Y') : 'N/A' }}</div>
           </div>
           <div class="col-md-2">
             <small class="text-muted d-block"><i class="bi bi-calendar-check me-1"></i>Válida hasta</small>
-            <div>{{ $c->fecha_validez ? $c->fecha_validez->format('d/m/Y') : 'No especificado' }}</div>
+            <div>{{ $c->fecha_validez ? \Carbon\Carbon::parse($c->fecha_validez)->format('d/m/Y') : 'No especificado' }}</div>
           </div>
           <div class="col-md-2">
             <small class="text-muted d-block"><i class="bi bi-clock-history me-1"></i>Entrega</small>
@@ -224,7 +158,6 @@
           </div>
         </div>
 
-        <!-- Detalles de Productos -->
         <div class="table-responsive">
           <table class="table table-sm table-hover align-middle">
             <thead class="table-light">
@@ -268,7 +201,6 @@
           </div>
         @endif
 
-        <!-- Acciones -->
         @if($c->estado === 'Activa' && in_array(Auth::user()->rol, ['Compras', 'Admin']))
           <div class="mt-3">
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalSeleccionar{{ $c->id_cotizacion }}">
@@ -279,7 +211,6 @@
             </a>
           </div>
 
-          <!-- Modal de confirmación -->
           <div class="modal fade" id="modalSeleccionar{{ $c->id_cotizacion }}" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -296,11 +227,7 @@
                     
                     <div class="mb-3">
                       <label class="form-label fw-bold">Justificación de selección: <span class="text-danger">*</span></label>
-                      <textarea name="justificacion" 
-                                class="form-control" 
-                                rows="4" 
-                                required
-                                placeholder="Indique las razones por las cuales selecciona esta cotización (precio, calidad, tiempo de entrega, etc.)"></textarea>
+                      <textarea name="justificacion" class="form-control" rows="4" required placeholder="Indique las razones por las cuales selecciona esta cotización (precio, calidad, tiempo de entrega, etc.)"></textarea>
                       <small class="text-muted">Mínimo 20 caracteres</small>
                     </div>
 
@@ -330,14 +257,10 @@
     </div>
   @endforeach
 
-  <!-- Botón para enviar a aprobación -->
   @if($solicitud->cotizaciones->where('estado', 'Seleccionada')->count() > 0 && in_array(Auth::user()->rol, ['Compras', 'Admin']))
     <div class="card border-primary">
       <div class="card-body text-center">
-        <h5 class="mb-3">
-          <i class="bi bi-check-circle text-success me-2"></i>
-          Cotización seleccionada correctamente
-        </h5>
+        <h5 class="mb-3"><i class="bi bi-check-circle text-success me-2"></i> Cotización seleccionada correctamente</h5>
         <form action="{{ route('cotizaciones.enviar-aprobacion', $solicitud->id_solicitud) }}" method="POST" class="d-inline">
           @csrf
           <button type="submit" class="btn btn-primary btn-lg">

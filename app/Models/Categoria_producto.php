@@ -18,7 +18,7 @@ class Categoria_producto extends Model
 
     protected $primaryKey = 'id_categoria';
     protected $keyType = 'int';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = true;
 
     public function productos()

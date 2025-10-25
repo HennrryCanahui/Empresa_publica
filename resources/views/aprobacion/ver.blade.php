@@ -29,7 +29,7 @@
             @endif
             <div>
                 <h5 class="mb-1">Estado: {{ str_replace('_', ' ', $aprobacion->decision) }}</h5>
-                <p class="mb-0">Decisión tomada el {{ $aprobacion->fecha_aprobacion->format('d/m/Y') }} a las {{ $aprobacion->fecha_aprobacion->format('H:i') }} por {{ $aprobacion->usuarioAutoridad->name ?? 'N/A' }}</p>
+                <p class="mb-0">Decisión tomada el {{ $aprobacion->fecha_aprobacion->format('d/m/Y') }} a las {{ $aprobacion->fecha_aprobacion->format('H:i') }} por {{ trim(($aprobacion->usuarioAutoridad->nombre ?? '') . ' ' . ($aprobacion->usuarioAutoridad->apellido ?? '')) ?: 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -70,7 +70,7 @@
           <dd class="col-sm-7">{{ $aprobacion->fecha_aprobacion->format('d/m/Y H:i') }}</dd>
           
           <dt class="col-sm-5"><i class="bi bi-person-badge text-warning me-1"></i>Autoridad:</dt>
-          <dd class="col-sm-7">{{ $aprobacion->usuarioAutoridad->name ?? 'N/A' }}</dd>
+          <dd class="col-sm-7">{{ trim(($aprobacion->usuarioAutoridad->nombre ?? '') . ' ' . ($aprobacion->usuarioAutoridad->apellido ?? '')) ?: 'N/A' }}</dd>
         </dl>
       </div>
     </div>
@@ -81,7 +81,7 @@
         <i class="bi bi-info-circle me-2"></i>Información de la Solicitud
       </div>
       <div class="card-body">
-        <p class="mb-2"><strong><i class="bi bi-person me-2 text-muted"></i>Solicitante:</strong> {{ $aprobacion->solicitud->usuarioCreador->name ?? 'N/A' }}</p>
+        <p class="mb-2"><strong><i class="bi bi-person me-2 text-muted"></i>Solicitante:</strong> {{ trim(($aprobacion->solicitud->usuarioCreador->nombre ?? '') . ' ' . ($aprobacion->solicitud->usuarioCreador->apellido ?? '')) ?: 'N/A' }}</p>
         <p class="mb-2"><strong><i class="bi bi-calendar3 me-2 text-muted"></i>Fecha Creación:</strong> {{ $aprobacion->solicitud->fecha_creacion->format('d/m/Y') }}</p>
         <p class="mb-2"><strong><i class="bi bi-speedometer2 me-2 text-muted"></i>Prioridad:</strong> 
           @if($aprobacion->solicitud->prioridad == 'Urgente')
@@ -105,7 +105,7 @@
       <div class="card-body">
         <p class="mb-2"><strong><i class="bi bi-cash-stack text-success me-2"></i>Monto Validado:</strong> Q {{ number_format($aprobacion->solicitud->presupuesto->monto_estimado, 2) }}</p>
         <p class="mb-2"><strong><i class="bi bi-bookmark text-info me-2"></i>Partida:</strong> <span class="badge bg-info">{{ $aprobacion->solicitud->presupuesto->partida_presupuestaria }}</span></p>
-        <p class="mb-0"><strong><i class="bi bi-person text-muted me-2"></i>Validado por:</strong> {{ $aprobacion->solicitud->presupuesto->usuarioPresupuesto->name ?? 'N/A' }}</p>
+        <p class="mb-0"><strong><i class="bi bi-person text-muted me-2"></i>Validado por:</strong> {{ trim(($aprobacion->solicitud->presupuesto->usuarioPresupuesto->nombre ?? '') . ' ' . ($aprobacion->solicitud->presupuesto->usuarioPresupuesto->apellido ?? '')) ?: 'N/A' }}</p>
       </div>
     </div>
     @endif

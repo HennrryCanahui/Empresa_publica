@@ -106,7 +106,7 @@
         <select name="id_unidad" class="form-select">
           <option value="">Todas</option>
           @foreach($unidades as $u)
-            <option value="{{ $u->id_unidad }}" {{ request('id_unidad') == $u->id_unidad ? 'selected' : '' }}>{{ $u->nombre_unidad }}</option>
+            <option value="{{ $u->id_unidad }}" {{ request('id_unidad') == $u->id_unidad ? 'selected' : '' }}>{{ $u->nombre }}</option>
           @endforeach
         </select>
       </div>
@@ -171,7 +171,7 @@
                     <span class="badge bg-secondary">{{ $usuario->rol }}</span>
                   @endif
                 </td>
-                <td><small>{{ $usuario->unidad->nombre_unidad ?? 'Sin unidad' }}</small></td>
+                <td><small>{{ $usuario->unidad->nombre ?? 'Sin unidad' }}</small></td>
                 <td><small>{{ $usuario->telefono ?? '-' }}</small></td>
                 <td class="text-center">
                   @if($usuario->activo)

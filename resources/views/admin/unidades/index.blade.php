@@ -119,7 +119,7 @@
             @foreach($unidades as $unidad)
               <tr>
                 <td><small class="text-muted">#{{ $unidad->id_unidad }}</small></td>
-                <td><strong>{{ $unidad->nombre_unidad }}</strong></td>
+                <td><strong>{{ $unidad->nombre }}</strong></td>
                 <td><small>{{ $unidad->descripcion ?? 'Sin descripción' }}</small></td>
                 <td class="text-center">
                   <span class="badge bg-info">{{ $unidad->usuarios_count }}</span>
@@ -169,3 +169,4 @@
   @endif
 </div>
 @endsection
+

@@ -81,7 +81,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/cotizaciones/enviar-aprobacion/{solicitud}', [CotizacionController::class, 'enviarAAprobacion'])->name('cotizaciones.enviar-aprobacion');
         Route::get('/cotizaciones/ver/{cotizacion}', [CotizacionController::class, 'ver'])->name('cotizaciones.ver');
         
-        Route::resource('proveedores', ProveedorController::class);
+        Route::resource('proveedores', ProveedorController::class)->parameters([
+            'proveedores' => 'proveedor'
+        ]);
         
         Route::get('/adquisiciones', [AdquisicionController::class, 'index'])->name('adquisiciones.index');
         Route::get('/adquisiciones/crear/{solicitud}', [AdquisicionController::class, 'create'])->name('adquisiciones.create');

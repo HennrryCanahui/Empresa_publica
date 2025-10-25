@@ -92,7 +92,7 @@
               </td>
               <td>
                 <small>{{ $s->unidadSolicitante->nombre ?? 'N/A' }}</small><br>
-                <small class="text-muted">{{ $s->usuarioCreador->name ?? 'N/A' }}</small>
+                <small class="text-muted">{{ trim(($s->usuarioCreador->nombre ?? '') . ' ' . ($s->usuarioCreador->apellido ?? '')) ?: 'N/A' }}</small>
               </td>
               <td>
                 <span data-bs-toggle="tooltip" title="{{ $s->descripcion }}">

@@ -46,7 +46,7 @@
           <dt class="col-sm-5"><i class="bi bi-file-text text-primary me-1"></i>Solicitud:</dt>
           <dd class="col-sm-7">
             <strong>{{ $presupuesto->solicitud->numero_solicitud ?? 'N/A' }}</strong><br>
-            <small class="text-muted">{{ $presupuesto->solicitud->unidadSolicitante->nombre_unidad ?? '' }}</small>
+            <small class="text-muted">{{ $presupuesto->solicitud->unidadSolicitante->nombre ?? '' }}</small>
           </dd>
           
           <dt class="col-sm-5"><i class="bi bi-cash-stack text-success me-1"></i>Monto Estimado:</dt>

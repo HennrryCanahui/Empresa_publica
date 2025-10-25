@@ -34,7 +34,7 @@ class Catalogo_producto extends Model
 
     protected $primaryKey = 'id_producto';
     protected $keyType = 'int';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = true;
 
 

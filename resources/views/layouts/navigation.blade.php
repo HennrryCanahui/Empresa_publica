@@ -21,11 +21,13 @@
                             <span class="fw-semibold">{{ Auth::user()->nombre ?? Auth::user()->name ?? '' }}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('profile.edit') }}">
+                          {{-- <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('profile.edit') }}"> 
                                 <i class="bi bi-person"></i>
                                 {{ __('Ver perfil') }}
                             </a>
                             <div class="dropdown-divider"></div>
+                                --}}
+                            
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="dropdown-item d-flex align-items-center gap-2">

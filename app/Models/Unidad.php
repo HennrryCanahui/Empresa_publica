@@ -10,7 +10,7 @@ class Unidad extends Model
 
     protected $fillable = [
         'id_unidad',
-        'nombre_unidad',
+        'nombre',
         'descripcion',
         'activo'
     ];
@@ -18,7 +18,7 @@ class Unidad extends Model
     // Primary key configuration
     protected $primaryKey = 'id_unidad';
     protected $keyType = 'int';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = true;
 
     // Relations

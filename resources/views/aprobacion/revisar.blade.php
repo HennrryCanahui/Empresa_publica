@@ -41,7 +41,7 @@
                         <span class="badge bg-info">{{ $solicitud->prioridad }}</span>
                     @endif
                 </h5>
-                <p class="mb-0">Creada el {{ $solicitud->fecha_creacion->format('d/m/Y') }} por {{ $solicitud->usuarioCreador->name ?? 'N/A' }}</p>
+                <p class="mb-0">Creada el {{ $solicitud->fecha_creacion->format('d/m/Y') }} por {{ trim(($solicitud->usuarioCreador->nombre ?? '') . ' ' . ($solicitud->usuarioCreador->apellido ?? '')) ?: 'N/A' }}</p>
             </div>
         </div>
     </div>
@@ -64,7 +64,7 @@
           </div>
           <div class="col-md-6 mb-3">
             <p class="mb-1"><i class="bi bi-person text-primary me-2"></i><strong>Solicitado por:</strong></p>
-            <p class="ms-4 text-muted">{{ $solicitud->usuarioCreador->name ?? 'N/A' }}</p>
+            <p class="ms-4 text-muted">{{ trim(($solicitud->usuarioCreador->nombre ?? '') . ' ' . ($solicitud->usuarioCreador->apellido ?? '')) ?: 'N/A' }}</p>
           </div>
           <div class="col-12 mb-2">
             <p class="mb-1"><i class="bi bi-chat-left-text text-primary me-2"></i><strong>Descripción:</strong></p>
@@ -100,7 +100,7 @@
           </div>
           <div class="col-md-6">
             <p class="mb-2"><i class="bi bi-person-badge text-secondary me-2"></i><strong>Validado por:</strong></p>
-            <p class="ms-4">{{ $solicitud->presupuesto->usuarioPresupuesto->name ?? 'N/A' }}</p>
+            <p class="ms-4">{{ trim(($solicitud->presupuesto->usuarioPresupuesto->nombre ?? '') . ' ' . ($solicitud->presupuesto->usuarioPresupuesto->apellido ?? '')) ?: 'N/A' }}</p>
           </div>
           @if($solicitud->presupuesto->observaciones)
           <div class="col-12">
@@ -206,7 +206,7 @@
               @if($h->observaciones)
                 <p class="mb-0 mt-2 text-muted"><small>{{ $h->observaciones }}</small></p>
               @endif
-              <small class="text-muted">Por: {{ $h->usuario->name ?? 'Sistema' }}</small>
+              <small class="text-muted">Por: {{ trim(($h->usuario->nombre ?? '') . ' ' . ($h->usuario->apellido ?? '')) ?: 'Sistema' }}</small>
             </div>
           @endforeach
         </div>

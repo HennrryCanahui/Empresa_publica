@@ -35,9 +35,9 @@
           @method('PUT')
 
           <div class="mb-3">
-            <label for="nombre_unidad" class="form-label">Nombre de la Unidad <span class="text-danger">*</span></label>
-            <input type="text" class="form-control @error('nombre_unidad') is-invalid @enderror" id="nombre_unidad" name="nombre_unidad" value="{{ old('nombre_unidad', $unidad->nombre_unidad) }}" required>
-            @error('nombre_unidad')
+            <label for="nombre" class="form-label">Nombre de la Unidad <span class="text-danger">*</span></label>
+            <input type="text" class="form-control @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre', $unidad->nombre) }}" required>
+            @error('nombre')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
@@ -76,3 +76,4 @@
   </div>
 </div>
 @endsection
+

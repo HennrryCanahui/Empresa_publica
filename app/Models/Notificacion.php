@@ -18,7 +18,7 @@ class Notificacion extends Model
     ];
 
     protected $primaryKey = 'id_notificacion';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = false;
 
     public function usuario()

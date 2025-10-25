@@ -75,7 +75,7 @@
                   @endif
                 </td>
                 <td>
-                  <div><strong>{{ $s->unidadSolicitante->nombre_unidad ?? 'N/A' }}</strong></div>
+                  <div><strong>{{ $s->unidadSolicitante->nombre ?? 'N/A' }}</strong></div>
                   <small class="text-muted">
                     {{ trim(($s->usuarioCreador->nombre ?? '') . ' ' . ($s->usuarioCreador->apellido ?? '')) ?: 'N/A' }}
                   </small>

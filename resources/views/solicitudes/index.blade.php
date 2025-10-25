@@ -176,7 +176,7 @@
                                         {{ $solicitud->descripcion }}
                                     </div>
                                     <small class="text-muted">
-                                        <i class="bi bi-building me-1"></i>{{ $solicitud->unidadSolicitante->nombre_unidad ?? 'N/A' }}
+                                        <i class="bi bi-building me-1"></i>{{ $solicitud->unidadSolicitante->nombre ?? 'N/A' }}
                                     </small>
                                 </td>
                                 </td>

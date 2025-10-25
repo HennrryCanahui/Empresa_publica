@@ -22,7 +22,7 @@ class Auditoria extends Model
 
     protected $primaryKey = 'id_auditoria';
     protected $keyType = 'int';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = false;
 
     protected $casts = [
