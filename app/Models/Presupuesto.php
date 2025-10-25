@@ -22,7 +22,8 @@ class Presupuesto extends Model
 
     protected $primaryKey = 'id_presupuesto';
     protected $keyType = 'int';
-    public $incrementing = false;
+    public $incrementing = true; // Cambiar a true para Oracle auto-increment
+    // Tabla no tiene created_at/updated_at
     public $timestamps = false;
 
     protected $casts = [

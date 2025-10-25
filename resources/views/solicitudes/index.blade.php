@@ -89,8 +89,8 @@
     <a href="{{ route('solicitudes.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-circle me-2"></i>Nueva Solicitud
     </a>
-    <a href="{{ route('solicitudes.historial') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-clock-history me-2"></i>Ver Historial
+    <a href="{{ route('solicitudes.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-clock-history me-2"></i>Ver Mis Solicitudes
     </a>
 </div>
 

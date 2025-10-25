@@ -34,7 +34,7 @@ class Adquisicion extends Model
     // Primary key and timestamps
     protected $primaryKey = 'id_adquisicion';
     protected $keyType = 'int';
-    public $incrementing = false;
+    public $incrementing = true; // Cambiar a true para Oracle auto-increment
     public $timestamps = true;
 
     protected $casts = [

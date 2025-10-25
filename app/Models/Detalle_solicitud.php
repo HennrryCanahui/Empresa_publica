@@ -24,8 +24,10 @@ class Detalle_solicitud extends Model
 
     protected $primaryKey = 'id_detalle';
     protected $keyType = 'int';
-    public $incrementing = false;
-    public $timestamps = true;
+    // Cambiar a true para que Laravel recupere el ID generado por el trigger de Oracle
+    public $incrementing = true;
+    // Tabla no tiene created_at/updated_at
+    public $timestamps = false;
 
     public function solicitud()
     {

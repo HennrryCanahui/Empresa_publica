@@ -50,8 +50,8 @@
                 <i class="bi bi-clock-history display-4 text-warning mb-3"></i>
                 <h5 class="card-title">Historial</h5>
                 <p class="card-text text-muted">Consultar historial completo</p>
-                <a href="{{ route('solicitudes.historial') }}" class="btn btn-warning">
-                    <i class="bi bi-clock-history me-1"></i>Historial
+                <a href="{{ route('solicitudes.index') }}" class="btn btn-warning">
+                    <i class="bi bi-clock-history me-1"></i>Ver solicitudes
                 </a>
             </div>
         </div>

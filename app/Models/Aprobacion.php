@@ -31,6 +31,12 @@ class Aprobacion extends Model
 
     protected $primaryKey = 'id_aprobacion';
     protected $keyType = 'int';
-    public $incrementing = false;
-    public $timestamps = true;
+    public $incrementing = true; // Cambiar a true para Oracle auto-increment
+    // Tabla no tiene created_at/updated_at
+    public $timestamps = false;
+
+    protected $casts = [
+        'fecha_aprobacion' => 'datetime',
+        'monto_aprobado' => 'decimal:2'
+    ];
 }

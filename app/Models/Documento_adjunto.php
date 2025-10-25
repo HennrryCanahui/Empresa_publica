@@ -21,8 +21,10 @@ class Documento_adjunto extends Model
 
     protected $primaryKey = 'id_documento';
     protected $keyType = 'int';
-    public $incrementing = false;
-    public $timestamps = true;
+    public $incrementing = true; // Cambiar a true para Oracle auto-increment
+    public $timestamps = false; // Tabla solo tiene created_at, no updated_at
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = null;
 
     public function solicitud()
     {

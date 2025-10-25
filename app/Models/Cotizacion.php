@@ -50,6 +50,6 @@ class Cotizacion extends Model
 
     protected $primaryKey = 'id_cotizacion';
     protected $keyType = 'int';
-    public $incrementing = false;
+    public $incrementing = true; // Cambiar a true para Oracle auto-increment
     public $timestamps = true;
 }

@@ -24,14 +24,19 @@ class Solicitud extends Model
 
     protected $primaryKey = 'id_solicitud';
     protected $keyType = 'int';
-    public $incrementing = false;
-    public $timestamps = true;
+    // Cambiar a true para que Laravel recupere el ID generado por el trigger de Oracle
+    public $incrementing = true;
+    public $timestamps = false;
 
     protected $casts = [
         'fecha_creacion' => 'datetime',
         'fecha_limite' => 'date',
         'monto_total_estimado' => 'decimal:2'
     ];
+
+    // La tabla usa UPDATED_AT pero no CREATED_AT
+    // Solo manejaremos UPDATED_AT manualmente cuando sea necesario
+    const UPDATED_AT = 'updated_at';
 
     /**
      * Obtener la clave de ruta para el modelo.

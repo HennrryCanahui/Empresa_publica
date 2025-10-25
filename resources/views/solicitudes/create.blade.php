@@ -252,7 +252,7 @@ function crearProductoItem(index) {
     `;
 }
 
-// Delegar eventos para selects de producto y cantidades
+// Delegar eventos para selects de producto
 document.getElementById('productos-container').addEventListener('change', function(e) {
     if (e.target.classList.contains('producto-select')) {
         const productoItem = e.target.closest('.producto-item');
@@ -265,7 +265,10 @@ document.getElementById('productos-container').addEventListener('change', functi
         
         calcularSubtotal(productoItem);
     }
-    
+});
+
+// Delegar eventos para inputs de cantidad (usar 'input' para actualizar en tiempo real)
+document.getElementById('productos-container').addEventListener('input', function(e) {
     if (e.target.classList.contains('cantidad-input')) {
         const productoItem = e.target.closest('.producto-item');
         calcularSubtotal(productoItem);

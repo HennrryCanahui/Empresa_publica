@@ -60,79 +60,86 @@ class SolicitudController extends Controller
     /**
      * Guardar nueva solicitud
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'descripcion' => 'required|string|max:4000',
-            'justificacion' => 'required|string|max:4000',
-            'prioridad' => 'required|in:Baja,Media,Alta,Urgente',
-            'fecha_limite' => 'nullable|date|after:today',
-            'id_unidad_solicitante' => 'required|exists:unidad,id_unidad',
-            'productos' => 'required|array|min:1',
-            'productos.*.id_producto' => 'required|exists:catalogo_producto,id_producto',
-            'productos.*.cantidad' => 'required|numeric|min:0.01',
-            'productos.*.especificaciones_adicionales' => 'nullable|string|max:4000',
+   public function store(Request $request)
+{
+    // Validación completa
+    $validated = $request->validate([
+        'descripcion' => 'required|string|max:4000',
+        'justificacion' => 'required|string|max:4000',
+        'prioridad' => 'required|in:Baja,Media,Alta,Urgente',
+        'fecha_limite' => 'nullable|date|after:today',
+        'id_unidad_solicitante' => 'required|exists:UNIDAD,id_unidad',
+        'productos' => 'required|array|min:1',
+        'productos.*.id_producto' => 'required|exists:CATALOGO_PRODUCTO,id_producto',
+        'productos.*.cantidad' => 'required|numeric|min:0.01',
+        'productos.*.especificaciones_adicionales' => 'nullable|string|max:4000',
+    ], [
+        'productos.required' => 'Debe agregar al menos un producto',
+        'productos.*.id_producto.required' => 'Debe seleccionar un producto',
+        'productos.*.cantidad.required' => 'Debe ingresar una cantidad',
+        'productos.*.cantidad.min' => 'La cantidad debe ser mayor a 0',
+    ]);
+
+    DB::beginTransaction();
+    try {
+        $user = Auth::user();
+        
+        // Generar número de solicitud único
+        $year = date('Y');
+        $count = Solicitud::whereYear('fecha_creacion', $year)->count() + 1;
+        $numeroSolicitud = 'SOL-' . $year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+
+        // Crear solicitud
+        $solicitud = Solicitud::create([
+            'numero_solicitud' => $numeroSolicitud,
+            'fecha_creacion' => now(),
+            'descripcion' => $validated['descripcion'],
+            'justificacion' => $validated['justificacion'],
+            'estado' => 'Creada',
+            'id_unidad_solicitante' => $validated['id_unidad_solicitante'],
+            'id_usuario_creador' => $user->id_usuario,
+            'prioridad' => $validated['prioridad'],
+            'fecha_limite' => $validated['fecha_limite'],
         ]);
 
-        DB::beginTransaction();
-        try {
-            $user = Auth::user();
+        // Crear detalles de solicitud
+        $montoTotal = 0;
+        foreach ($validated['productos'] as $producto) {
+            $catalogoProducto = Catalogo_producto::find($producto['id_producto']);
             
-            // Generar número de solicitud único
-            $year = date('Y');
-            $count = Solicitud::whereYear('fecha_creacion', $year)->count() + 1;
-            $numeroSolicitud = 'SOL-' . $year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
-
-            // Crear solicitud
-            $solicitud = Solicitud::create([
-                'numero_solicitud' => $numeroSolicitud,
-                'fecha_creacion' => now(),
-                'descripcion' => $validated['descripcion'],
-                'justificacion' => $validated['justificacion'],
-                'estado' => 'Creada',
-                'id_unidad_solicitante' => $validated['id_unidad_solicitante'],
-                'id_usuario_creador' => $user->id_usuario,
-                'prioridad' => $validated['prioridad'],
-                'fecha_limite' => $validated['fecha_limite'],
-            ]);
-
-            // Crear detalles de solicitud
-            $montoTotal = 0;
-            foreach ($validated['productos'] as $producto) {
-                $catalogoProducto = Catalogo_producto::find($producto['id_producto']);
-                $precioEstimado = $catalogoProducto->precio_referencia ?? 0;
-                $precioTotal = $producto['cantidad'] * $precioEstimado;
-                $montoTotal += $precioTotal;
-
-                Detalle_solicitud::create([
-                    'id_solicitud' => $solicitud->id_solicitud,
-                    'id_producto' => $producto['id_producto'],
-                    'cantidad' => $producto['cantidad'],
-                    'especificaciones_adicionales' => $producto['especificaciones_adicionales'] ?? null,
-                    'precio_estimado_unitario' => $precioEstimado,
-                    'precio_estimado_total' => $precioTotal,
-                ]);
+            if (!$catalogoProducto) {
+                throw new \Exception("Producto no encontrado: {$producto['id_producto']}");
             }
+            
+            $precioEstimado = $catalogoProducto->precio_referencia ?? 0;
+            $precioTotal = $producto['cantidad'] * $precioEstimado;
+            $montoTotal += $precioTotal;
 
-            // Actualizar monto total
-            $solicitud->update(['monto_total_estimado' => $montoTotal]);
-
-            // Registrar en historial (el trigger de BD lo hace automáticamente)
-
-            DB::commit();
-            return redirect()->route('solicitudes.show', $solicitud->id_solicitud)
-                ->with('success', 'Solicitud creada exitosamente con número: ' . $numeroSolicitud);
-                
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withInput()->with('error', 'Error al crear la solicitud: ' . $e->getMessage());
+            Detalle_solicitud::create([
+                'id_solicitud' => $solicitud->id_solicitud,
+                'id_producto' => $producto['id_producto'],
+                'cantidad' => $producto['cantidad'],
+                'especificaciones_adicionales' => $producto['especificaciones_adicionales'] ?? null,
+                'precio_estimado_unitario' => $precioEstimado,
+                'precio_estimado_total' => $precioTotal,
+            ]);
         }
+
+        // Actualizar monto total
+        $solicitud->update(['monto_total_estimado' => $montoTotal]);
+
+        DB::commit();
+        
+        return redirect()->route('solicitudes.show', $solicitud->id_solicitud)
+            ->with('success', 'Solicitud creada exitosamente con número: ' . $numeroSolicitud);
+            
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error al crear solicitud: ' . $e->getMessage());
+        return back()->withInput()
+            ->with('error', 'Error al crear la solicitud: ' . $e->getMessage());
     }
-
-
-    /**
-     * Mostrar detalle de una solicitud
-     */
+}
     public function show($id)
     {
         $solicitud = Solicitud::with([
@@ -185,72 +192,74 @@ class SolicitudController extends Controller
     /**
      * Actualizar solicitud
      */
-    public function update(Request $request, $id)
-    {
-        $solicitud = Solicitud::findOrFail($id);
-        
-        // Validar permisos
-        if ($solicitud->id_usuario_creador != Auth::user()->id_usuario || 
-            !in_array($solicitud->estado, ['Creada', 'Rechazada'])) {
-            abort(403, 'No tiene permisos para editar esta solicitud.');
-        }
+   public function update(Request $request, $id)
+{
+    $solicitud = Solicitud::findOrFail($id);
+    
+    // Validar permisos
+    if ($solicitud->id_usuario_creador != Auth::user()->id_usuario || 
+        !in_array($solicitud->estado, ['Creada', 'Rechazada'])) {
+        abort(403, 'No tiene permisos para editar esta solicitud.');
+    }
 
-        $validated = $request->validate([
-            'descripcion' => 'required|string|max:4000',
-            'justificacion' => 'required|string|max:4000',
-            'prioridad' => 'required|in:Baja,Media,Alta,Urgente',
-            'fecha_limite' => 'nullable|date|after:today',
-            'id_unidad_solicitante' => 'required|exists:unidad,id_unidad',
-            'productos' => 'required|array|min:1',
-            'productos.*.id_producto' => 'required|exists:catalogo_producto,id_producto',
-            'productos.*.cantidad' => 'required|numeric|min:0.01',
-            'productos.*.especificaciones_adicionales' => 'nullable|string|max:4000',
+    $validated = $request->validate([
+        'descripcion' => 'required|string|max:4000',
+        'justificacion' => 'required|string|max:4000',
+        'prioridad' => 'required|in:Baja,Media,Alta,Urgente',
+        'fecha_limite' => 'nullable|date|after:today',
+        'id_unidad_solicitante' => 'required|exists:UNIDAD,id_unidad',
+        'productos' => 'required|array|min:1',
+        'productos.*.id_producto' => 'required|exists:CATALOGO_PRODUCTO,id_producto',
+        'productos.*.cantidad' => 'required|numeric|min:0.01',
+        'productos.*.especificaciones_adicionales' => 'nullable|string|max:4000',
+    ]);
+
+    DB::beginTransaction();
+    try {
+        // Actualizar solicitud
+        $solicitud->update([
+            'descripcion' => $validated['descripcion'],
+            'justificacion' => $validated['justificacion'],
+            'prioridad' => $validated['prioridad'],
+            'fecha_limite' => $validated['fecha_limite'],
+            'id_unidad_solicitante' => $validated['id_unidad_solicitante'],
         ]);
 
-        DB::beginTransaction();
-        try {
-            // Actualizar solicitud
-            $solicitud->update([
-                'descripcion' => $validated['descripcion'],
-                'justificacion' => $validated['justificacion'],
-                'prioridad' => $validated['prioridad'],
-                'fecha_limite' => $validated['fecha_limite'],
-                'id_unidad_solicitante' => $validated['id_unidad_solicitante'],
+        // Eliminar detalles anteriores
+        Detalle_solicitud::where('id_solicitud', $solicitud->id_solicitud)->delete();
+
+        // Crear nuevos detalles
+        $montoTotal = 0;
+        foreach ($validated['productos'] as $producto) {
+            $catalogoProducto = Catalogo_producto::find($producto['id_producto']);
+            $precioEstimado = $catalogoProducto->precio_referencia ?? 0;
+            $precioTotal = $producto['cantidad'] * $precioEstimado;
+            $montoTotal += $precioTotal;
+
+            Detalle_solicitud::create([
+                'id_solicitud' => $solicitud->id_solicitud,
+                'id_producto' => $producto['id_producto'],
+                'cantidad' => $producto['cantidad'],
+                'especificaciones_adicionales' => $producto['especificaciones_adicionales'] ?? null,
+                'precio_estimado_unitario' => $precioEstimado,
+                'precio_estimado_total' => $precioTotal,
             ]);
-
-            // Eliminar detalles anteriores
-            Detalle_solicitud::where('id_solicitud', $solicitud->id_solicitud)->delete();
-
-            // Crear nuevos detalles
-            $montoTotal = 0;
-            foreach ($validated['productos'] as $producto) {
-                $catalogoProducto = Catalogo_producto::find($producto['id_producto']);
-                $precioEstimado = $catalogoProducto->precio_referencia ?? 0;
-                $precioTotal = $producto['cantidad'] * $precioEstimado;
-                $montoTotal += $precioTotal;
-
-                Detalle_solicitud::create([
-                    'id_solicitud' => $solicitud->id_solicitud,
-                    'id_producto' => $producto['id_producto'],
-                    'cantidad' => $producto['cantidad'],
-                    'especificaciones_adicionales' => $producto['especificaciones_adicionales'] ?? null,
-                    'precio_estimado_unitario' => $precioEstimado,
-                    'precio_estimado_total' => $precioTotal,
-                ]);
-            }
-
-            // Actualizar monto total
-            $solicitud->update(['monto_total_estimado' => $montoTotal]);
-
-            DB::commit();
-            return redirect()->route('solicitudes.show', $solicitud->id_solicitud)
-                ->with('success', 'Solicitud actualizada exitosamente.');
-                
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withInput()->with('error', 'Error al actualizar: ' . $e->getMessage());
         }
+
+        // Actualizar monto total
+        $solicitud->update(['monto_total_estimado' => $montoTotal]);
+
+        DB::commit();
+        return redirect()->route('solicitudes.show', $solicitud->id_solicitud)
+            ->with('success', 'Solicitud actualizada exitosamente.');
+            
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error al actualizar solicitud: ' . $e->getMessage());
+        return back()->withInput()
+            ->with('error', 'Error al actualizar: ' . $e->getMessage());
     }
+}
 
 
     /**
@@ -268,7 +277,12 @@ class SolicitudController extends Controller
 
         DB::beginTransaction();
         try {
-            $solicitud->update(['estado' => 'En_Presupuesto']);
+            DB::table('SOLICITUD')
+                ->where('id_solicitud', $solicitud->id_solicitud)
+                ->update([
+                    'estado' => 'En_Presupuesto',
+                    'updated_at' => now()
+                ]);
             
             DB::commit();
             return redirect()->route('solicitudes.show', $solicitud->id_solicitud)
@@ -302,7 +316,12 @@ class SolicitudController extends Controller
 
         DB::beginTransaction();
         try {
-            $solicitud->update(['estado' => 'Cancelada']);
+            DB::table('SOLICITUD')
+                ->where('id_solicitud', $solicitud->id_solicitud)
+                ->update([
+                    'estado' => 'Cancelada',
+                    'updated_at' => now()
+                ]);
 
             DB::commit();
             return redirect()->route('solicitudes.index')
@@ -348,7 +367,12 @@ class SolicitudController extends Controller
 
         DB::beginTransaction();
         try {
-            $solicitud->update(['estado' => $validated['nuevo_estado']]);
+            DB::table('SOLICITUD')
+                ->where('id_solicitud', $solicitud->id_solicitud)
+                ->update([
+                    'estado' => $validated['nuevo_estado'],
+                    'updated_at' => now()
+                ]);
 
             DB::commit();
             return back()->with('success', 'Estado actualizado exitosamente.');
