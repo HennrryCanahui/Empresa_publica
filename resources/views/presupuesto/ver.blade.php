@@ -46,7 +46,7 @@
           <dt class="col-sm-5"><i class="bi bi-file-text text-primary me-1"></i>Solicitud:</dt>
           <dd class="col-sm-7">
             <strong>{{ $presupuesto->solicitud->numero_solicitud ?? 'N/A' }}</strong><br>
-            <small class="text-muted">{{ $presupuesto->solicitud->unidadSolicitante->nombre ?? '' }}</small>
+            <small class="text-muted">{{ $presupuesto->solicitud->unidadSolicitante->nombre_unidad ?? '' }}</small>
           </dd>
           
           <dt class="col-sm-5"><i class="bi bi-cash-stack text-success me-1"></i>Monto Estimado:</dt>
@@ -62,7 +62,7 @@
           <dd class="col-sm-7">{{ $presupuesto->fecha_revision->format('d/m/Y H:i') }}</dd>
           
           <dt class="col-sm-5"><i class="bi bi-person-badge text-primary me-1"></i>Validado por:</dt>
-          <dd class="col-sm-7">{{ $presupuesto->usuarioPresupuesto->name ?? 'N/A' }}</dd>
+          <dd class="col-sm-7">{{ trim(($presupuesto->usuarioPresupuesto->nombre ?? '') . ' ' . ($presupuesto->usuarioPresupuesto->apellido ?? '')) ?: 'N/A' }}</dd>
         </dl>
       </div>
     </div>
@@ -103,7 +103,7 @@
             <span class="badge bg-secondary">Baja</span>
           @endif
         </p>
-        <p class="mb-0"><strong><i class="bi bi-person me-2 text-muted"></i>Solicitante:</strong> {{ $presupuesto->solicitud->usuarioCreador->name ?? 'N/A' }}</p>
+  <p class="mb-0"><strong><i class="bi bi-person me-2 text-muted"></i>Solicitante:</strong> {{ trim(($presupuesto->solicitud->usuarioCreador->nombre ?? '') . ' ' . ($presupuesto->solicitud->usuarioCreador->apellido ?? '')) ?: 'N/A' }}</p>
       </div>
     </div>
   </div>

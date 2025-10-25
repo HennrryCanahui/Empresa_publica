@@ -24,7 +24,7 @@
             <p class="mb-2"><strong><i class="bi bi-building me-1"></i>Unidad:</strong><br>
             <span class="ms-3">{{ $solicitud->unidadSolicitante->nombre ?? 'N/A' }}</span></p>
             <p class="mb-2"><strong><i class="bi bi-person me-1"></i>Solicitante:</strong><br>
-            <span class="ms-3">{{ $solicitud->usuarioCreador->name ?? 'N/A' }}</span></p>
+            <span class="ms-3">{{ trim(($solicitud->usuarioCreador->nombre ?? '') . ' ' . ($solicitud->usuarioCreador->apellido ?? '')) ?: 'N/A' }}</span></p>
           </div>
           <div class="col-md-6">
             <p class="mb-2"><strong><i class="bi bi-calendar me-1"></i>Fecha:</strong><br>

@@ -87,7 +87,7 @@
                 <small class="text-muted">{{ Str::limit($p->solicitud->descripcion ?? '', 40) }}</small>
               </td>
               <td>
-                <small>{{ $p->solicitud->unidadSolicitante->nombre ?? 'N/A' }}</small>
+                <small>{{ $p->solicitud->unidadSolicitante->nombre_unidad ?? 'N/A' }}</small>
               </td>
               <td>
                 <span class="badge bg-info">{{ $p->partida_presupuestaria }}</span>
@@ -108,7 +108,7 @@
                 @endif
               </td>
               <td>
-                <small>{{ $p->usuarioPresupuesto->name ?? 'N/A' }}</small>
+                <small>{{ trim(($p->usuarioPresupuesto->nombre ?? '') . ' ' . ($p->usuarioPresupuesto->apellido ?? '')) ?: 'N/A' }}</small>
               </td>
               <td class="text-center">
                 <a href="{{ route('presupuesto.ver', $p->id_presupuesto) }}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
