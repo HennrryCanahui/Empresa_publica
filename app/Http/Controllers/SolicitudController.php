@@ -18,13 +18,35 @@ class SolicitudController extends Controller
     /**
      * Mostrar todas las solicitudes del usuario autenticado
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        $solicitudes = Solicitud::with(['unidadSolicitante', 'usuarioCreador', 'detalles'])
-            ->where('id_usuario_creador', $user->id_usuario)
+
+        $query = Solicitud::with(['unidadSolicitante', 'usuarioCreador', 'detalles'])
+            ->where('id_usuario_creador', $user->id_usuario);
+
+        // Filtros
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->input('estado'));
+        }
+
+        if ($request->filled('prioridad')) {
+            $query->where('prioridad', $request->input('prioridad'));
+        }
+
+        if ($request->filled('buscar')) {
+            $buscar = trim($request->input('buscar'));
+            $buscarUpper = mb_strtoupper($buscar, 'UTF-8');
+            $query->where(function ($q) use ($buscarUpper) {
+                $q->whereRaw('UPPER(numero_solicitud) LIKE ?', ["%{$buscarUpper}%"]) 
+                  ->orWhereRaw('UPPER(descripcion) LIKE ?', ["%{$buscarUpper}%"]);
+            });
+        }
+
+        $solicitudes = $query
             ->orderBy('fecha_creacion', 'desc')
-            ->paginate(15);
+            ->paginate(15)
+            ->appends($request->query());
 
         return view('solicitudes.index', compact('solicitudes'));
     }
@@ -311,17 +333,30 @@ class SolicitudController extends Controller
         }
 
         $request->validate([
-            'motivo' => 'required|string|min:10|max:4000'
+            'motivo' => 'required|string|min:3|max:4000'
         ]);
 
         DB::beginTransaction();
         try {
+            $estadoAnterior = $solicitud->estado;
+
             DB::table('SOLICITUD')
                 ->where('id_solicitud', $solicitud->id_solicitud)
                 ->update([
                     'estado' => 'Cancelada',
                     'updated_at' => now()
                 ]);
+
+            // Registrar en historial de estados con el motivo
+            DB::table('HISTORIAL_ESTADOS')->insert([
+                'id_solicitud'   => $solicitud->id_solicitud,
+                'estado_anterior'=> $estadoAnterior,
+                'estado_nuevo'   => 'Cancelada',
+                'fecha_cambio'   => now(),
+                'id_usuario'     => Auth::user()->id_usuario,
+                'observaciones'  => $request->input('motivo'),
+                'ip_address'     => $request->ip(),
+            ]);
 
             DB::commit();
             return redirect()->route('solicitudes.index')

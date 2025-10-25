@@ -1,24 +1,37 @@
 @extends('layouts.app')
 
 @section('header')
-    <h2 class="h4 mb-0"><i class="bi bi-pencil me-2"></i>Editar Solicitud: {{ $solicitud->numero_solicitud }}</h2>
+    <h2 class="h4 mb-0"><i class="bi bi-pencil-square me-2"></i>Editar Solicitud</h2>
 @endsection
 
 @section('content')
-<form action="{{ route('solicitudes.update', $solicitud) }}" method="POST" id="form-solicitud">
+<form action="{{ route('solicitudes.update', $solicitud->id_solicitud) }}" method="POST" id="form-solicitud">
     @csrf
     @method('PUT')
     
-    <!-- Información General -->
     <div class="card mb-4">
         <div class="card-header bg-warning text-dark">
-            <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información General</h5>
+            <h5 class="mb-0">
+                <i class="bi bi-info-circle me-2"></i>Información General
+                <span class="badge bg-dark ms-2">{{ $solicitud->numero_solicitud }}</span>
+            </h5>
         </div>
         <div class="card-body">
             @if(session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <h6>Por favor corrija los siguientes errores:</h6>
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
@@ -88,83 +101,16 @@
         </div>
     </div>
 
-    <!-- Productos/Servicios -->
     <div class="card mb-4">
         <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-cart-plus me-2"></i>Productos/Servicios Solicitados</h5>
+            <h5 class="mb-0"><i class="bi bi-cart-plus me-2"></i>Productos/Servicios</h5>
             <button type="button" class="btn btn-light btn-sm" id="btn-agregar-producto">
                 <i class="bi bi-plus-circle me-1"></i>Agregar Producto
             </button>
         </div>
         <div class="card-body">
             <div id="productos-container">
-                @php
-                    $detalles = old('productos', $solicitud->detalles->toArray());
-                @endphp
-                
-                @foreach($detalles as $index => $detalle)
-                    <div class="producto-item border rounded p-3 mb-3" data-index="{{ $index }}">
-                        <div class="row align-items-end">
-                            <div class="col-md-4 mb-2">
-                                <label class="form-label">Producto/Servicio <span class="text-danger">*</span></label>
-                                <select name="productos[{{ $index }}][id_producto]" 
-                                        class="form-select producto-select" 
-                                        required>
-                                    <option value="">Seleccione un producto...</option>
-                                    @foreach($productos as $producto)
-                                        <option value="{{ $producto->id_producto }}" 
-                                                data-precio="{{ $producto->precio_referencia }}"
-                                                data-unidad="{{ $producto->unidad_medida }}"
-                                                {{ (old("productos.$index.id_producto", $detalle['id_producto'] ?? null) == $producto->id_producto) ? 'selected' : '' }}>
-                                            {{ $producto->codigo }} - {{ $producto->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-2 mb-2">
-                                <label class="form-label">Cantidad <span class="text-danger">*</span></label>
-                                <input type="number" 
-                                       name="productos[{{ $index }}][cantidad]" 
-                                       class="form-control cantidad-input"
-                                       step="0.01" 
-                                       min="0.01" 
-                                       value="{{ old("productos.$index.cantidad", $detalle['cantidad'] ?? '') }}"
-                                       placeholder="0.00"
-                                       required>
-                            </div>
-
-                            <div class="col-md-1 mb-2">
-                                <label class="form-label">Unidad</label>
-                                <input type="text" class="form-control unidad-medida" readonly>
-                            </div>
-
-                            <div class="col-md-2 mb-2">
-                                <label class="form-label">Precio Ref.</label>
-                                <input type="text" class="form-control precio-referencia" readonly>
-                            </div>
-
-                            <div class="col-md-2 mb-2">
-                                <label class="form-label">Subtotal Est.</label>
-                                <input type="text" class="form-control subtotal-estimado" readonly>
-                            </div>
-
-                            <div class="col-md-1 mb-2">
-                                <button type="button" class="btn btn-danger btn-sm w-100 btn-eliminar-producto">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-
-                            <div class="col-12 mb-2">
-                                <label class="form-label">Especificaciones Adicionales</label>
-                                <textarea name="productos[{{ $index }}][especificaciones_adicionales]" 
-                                          class="form-control" 
-                                          rows="2"
-                                          placeholder="Detalles adicionales, características específicas, etc.">{{ old("productos.$index.especificaciones_adicionales", $detalle['especificaciones_adicionales'] ?? '') }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
+                <!-- Los productos existentes se cargarán aquí -->
             </div>
 
             <div class="text-end mt-3">
@@ -173,11 +119,10 @@
         </div>
     </div>
 
-    <!-- Botones de acción -->
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between">
-                <a href="{{ route('solicitudes.show', $solicitud) }}" class="btn btn-secondary">
+                <a href="{{ route('solicitudes.show', $solicitud->id_solicitud) }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-2"></i>Cancelar
                 </a>
                 <button type="submit" class="btn btn-warning btn-lg">
@@ -188,21 +133,52 @@
     </div>
 </form>
 
-@push('scripts')
 <script>
-let productoIndex = {{ count($detalles) }};
+// Datos de productos desde el servidor
+const productosData = {!! json_encode($productos->map(function($p) {
+    return [
+        'id' => $p->id_producto,
+        'codigo' => $p->codigo,
+        'nombre' => $p->nombre,
+        'precio' => $p->precio_referencia ?? 0,
+        'unidad' => $p->unidad_medida ?? ''
+    ];
+})) !!};
 
-// Agregar producto
-document.getElementById('btn-agregar-producto').addEventListener('click', function() {
-    const container = document.getElementById('productos-container');
-    const nuevoProducto = crearProductoItem(productoIndex);
-    container.insertAdjacentHTML('beforeend', nuevoProducto);
-    productoIndex++;
-    actualizarBotonesEliminar();
-});
+// Productos existentes de la solicitud
+const productosExistentes = {!! json_encode($solicitud->detalles->map(function($d) {
+    return [
+        'id_producto' => $d->id_producto,
+        'cantidad' => $d->cantidad,
+        'precio_unitario' => $d->precio_estimado_unitario ?? 0,
+        'precio_total' => $d->precio_estimado_total ?? 0,
+        'unidad' => $d->producto->unidad_medida ?? '',
+        'especificaciones' => $d->especificaciones_adicionales ?? ''
+    ];
+})) !!};
+
+let productoIndex = 0;
 
 // Función para crear un nuevo item de producto
-function crearProductoItem(index) {
+function crearProductoHTML(index, datosExistentes = null) {
+    let optionsHTML = '<option value="">Seleccione un producto...</option>';
+    
+    productosData.forEach(function(producto) {
+        const selected = datosExistentes && datosExistentes.id_producto == producto.id ? 'selected' : '';
+        optionsHTML += '<option value="' + producto.id + '" ' +
+                       'data-precio="' + producto.precio + '" ' +
+                       'data-unidad="' + producto.unidad + '" ' +
+                       selected + '>' +
+                       producto.codigo + ' - ' + producto.nombre +
+                       '</option>';
+    });
+
+    const cantidad = datosExistentes ? datosExistentes.cantidad : '';
+    const precioRef = datosExistentes ? 'Q ' + parseFloat(datosExistentes.precio_unitario).toFixed(2) : '';
+    const subtotal = datosExistentes ? 'Q ' + parseFloat(datosExistentes.precio_total).toFixed(2) : '';
+    const unidad = datosExistentes ? datosExistentes.unidad : '';
+    const especificaciones = datosExistentes ? datosExistentes.especificaciones : '';
+
     return `
         <div class="producto-item border rounded p-3 mb-3" data-index="${index}">
             <div class="row align-items-end">
@@ -211,14 +187,7 @@ function crearProductoItem(index) {
                     <select name="productos[${index}][id_producto]" 
                             class="form-select producto-select" 
                             required>
-                        <option value="">Seleccione un producto...</option>
-                        @foreach($productos as $producto)
-                            <option value="{{ $producto->id_producto }}" 
-                                    data-precio="{{ $producto->precio_referencia }}"
-                                    data-unidad="{{ $producto->unidad_medida }}">
-                                {{ $producto->codigo }} - {{ $producto->nombre }}
-                            </option>
-                        @endforeach
+                        ${optionsHTML}
                     </select>
                 </div>
                 <div class="col-md-2 mb-2">
@@ -229,19 +198,20 @@ function crearProductoItem(index) {
                            step="0.01" 
                            min="0.01" 
                            placeholder="0.00"
+                           value="${cantidad}"
                            required>
                 </div>
                 <div class="col-md-1 mb-2">
                     <label class="form-label">Unidad</label>
-                    <input type="text" class="form-control unidad-medida" readonly>
+                    <input type="text" class="form-control unidad-medida" value="${unidad}" readonly>
                 </div>
                 <div class="col-md-2 mb-2">
                     <label class="form-label">Precio Ref.</label>
-                    <input type="text" class="form-control precio-referencia" readonly>
+                    <input type="text" class="form-control precio-referencia" value="${precioRef}" readonly>
                 </div>
                 <div class="col-md-2 mb-2">
                     <label class="form-label">Subtotal Est.</label>
-                    <input type="text" class="form-control subtotal-estimado" readonly>
+                    <input type="text" class="form-control subtotal-estimado" value="${subtotal}" readonly>
                 </div>
                 <div class="col-md-1 mb-2">
                     <button type="button" class="btn btn-danger btn-sm w-100 btn-eliminar-producto">
@@ -253,30 +223,61 @@ function crearProductoItem(index) {
                     <textarea name="productos[${index}][especificaciones_adicionales]" 
                               class="form-control" 
                               rows="2"
-                              placeholder="Detalles adicionales, características específicas, etc."></textarea>
+                              placeholder="Detalles adicionales, características específicas, etc.">${especificaciones}</textarea>
                 </div>
             </div>
         </div>
     `;
 }
 
-// Delegar eventos para selects de producto
+// Cargar productos existentes al iniciar
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('productos-container');
+    
+    if (productosExistentes.length > 0) {
+        productosExistentes.forEach(function(producto) {
+            const productoHTML = crearProductoHTML(productoIndex, producto);
+            container.insertAdjacentHTML('beforeend', productoHTML);
+            productoIndex++;
+        });
+    } else {
+        // Si no hay productos, agregar uno vacío
+        agregarProducto();
+    }
+    
+    actualizarBotonesEliminar();
+    calcularTotalGeneral();
+});
+
+// Función para agregar producto
+function agregarProducto() {
+    const container = document.getElementById('productos-container');
+    const nuevoProductoHTML = crearProductoHTML(productoIndex);
+    container.insertAdjacentHTML('beforeend', nuevoProductoHTML);
+    productoIndex++;
+    actualizarBotonesEliminar();
+}
+
+// Event listener para el botón agregar
+document.getElementById('btn-agregar-producto').addEventListener('click', function() {
+    console.log('Agregando producto...');
+    agregarProducto();
+});
+
+// Delegar eventos para selects de producto y cantidades
 document.getElementById('productos-container').addEventListener('change', function(e) {
     if (e.target.classList.contains('producto-select')) {
         const productoItem = e.target.closest('.producto-item');
         const option = e.target.options[e.target.selectedIndex];
-        const precio = parseFloat(option.dataset.precio) || 0;
-        const unidad = option.dataset.unidad || '';
+        const precio = parseFloat(option.getAttribute('data-precio')) || 0;
+        const unidad = option.getAttribute('data-unidad') || '';
         
         productoItem.querySelector('.precio-referencia').value = 'Q ' + precio.toFixed(2);
         productoItem.querySelector('.unidad-medida').value = unidad;
         
         calcularSubtotal(productoItem);
     }
-});
-
-// Delegar eventos para inputs de cantidad
-document.getElementById('productos-container').addEventListener('input', function(e) {
+    
     if (e.target.classList.contains('cantidad-input')) {
         const productoItem = e.target.closest('.producto-item');
         calcularSubtotal(productoItem);
@@ -301,57 +302,4 @@ function calcularSubtotal(productoItem) {
 
 // Calcular total general
 function calcularTotalGeneral() {
-    let total = 0;
-    document.querySelectorAll('.subtotal-estimado').forEach(function(input) {
-        const valor = parseFloat(input.value.replace('Q ', '').replace(',', '')) || 0;
-        total += valor;
-    });
-    
-    document.getElementById('total-general').textContent = 'Q ' + total.toFixed(2);
-}
-
-// Eliminar producto
-document.getElementById('productos-container').addEventListener('click', function(e) {
-    if (e.target.closest('.btn-eliminar-producto')) {
-        const productoItem = e.target.closest('.producto-item');
-        productoItem.remove();
-        actualizarBotonesEliminar();
-        calcularTotalGeneral();
-    }
-});
-
-// Actualizar visibilidad de botones eliminar
-function actualizarBotonesEliminar() {
-    const items = document.querySelectorAll('.producto-item');
-    items.forEach(function(item, index) {
-        const btnEliminar = item.querySelector('.btn-eliminar-producto');
-        if (items.length > 1) {
-            btnEliminar.style.display = 'block';
-        } else {
-            btnEliminar.style.display = 'none';
-        }
-    });
-}
-
-// Inicializar al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    // Cargar datos iniciales de productos existentes
-    document.querySelectorAll('.producto-item').forEach(function(item) {
-        const select = item.querySelector('.producto-select');
-        if (select.value) {
-            const option = select.options[select.selectedIndex];
-            const precio = parseFloat(option.dataset.precio) || 0;
-            const unidad = option.dataset.unidad || '';
-            
-            item.querySelector('.precio-referencia').value = 'Q ' + precio.toFixed(2);
-            item.querySelector('.unidad-medida').value = unidad;
-            
-            calcularSubtotal(item);
-        }
-    });
-    
-    actualizarBotonesEliminar();
-});
-</script>
-@endpush
-@endsection
+    let total =

@@ -423,8 +423,11 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Motivo de Cancelación <span class="text-danger">*</span></label>
-                        <textarea name="motivo" class="form-control" rows="3" required 
-                                  placeholder="Explica el motivo de la cancelación..."></textarea>
+                        <textarea name="motivo" class="form-control @error('motivo') is-invalid @enderror" rows="3" required 
+                                  placeholder="Explica el motivo de la cancelación...">{{ old('motivo') }}</textarea>
+                        @error('motivo')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -435,4 +438,17 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        @if ($errors->has('motivo'))
+            const modalEl = document.getElementById('modalCancelar');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        @endif
+    });
+</script>
+@endpush
 @endsection

@@ -21,8 +21,8 @@ class Historial_estados extends Model
 
     protected $primaryKey = 'id_historial';
     protected $keyType = 'int';
-    public $incrementing = false;
-    public $timestamps = false;
+    public $incrementing = true; // Usar trigger/sequence de Oracle
+    public $timestamps = false;  // La tabla no maneja created_at/updated_at
 
     protected $casts = [
         'fecha_cambio' => 'datetime',
