@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Aprobacion extends Model
+{
+    protected $table = 'APROBACION';
+
+    protected $fillable = [
+        'id_aprobacion',
+        'id_solicitud',
+        'decision',
+        'observaciones',
+        'fecha_aprobacion',
+        'id_usuario_autoridad',
+        'monto_aprobado',
+        'condiciones_aprobacion'
+    ];
+
+    public function solicitud()
+    {
+        return $this->belongsTo(Solicitud::class, 'id_solicitud', 'id_solicitud');
+    }
+
+    public function usuarioAutoridad()
+    {
+        return $this->belongsTo(User::class, 'id_usuario_autoridad', 'id_usuario');
+    }
+
+    protected $primaryKey = 'id_aprobacion';
+    protected $keyType = 'int';
+    public $incrementing = true; // Cambiar a true para Oracle auto-increment
+    // Tabla no tiene created_at/updated_at
+    public $timestamps = false;
+
+    protected $casts = [
+        'fecha_aprobacion' => 'datetime',
+        'monto_aprobado' => 'decimal:2'
+    ];
+}
